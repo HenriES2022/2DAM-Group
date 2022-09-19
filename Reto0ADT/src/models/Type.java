@@ -10,5 +10,6 @@ package models;
  * @author 2dam
  */
 public enum Type {
-    
+    STANDAR, 
+    CREDIT;
 }

@@ -20,7 +20,7 @@ public class Account implements Serializable{
     private float creditLine;
     private float beginBalance;
     private float beginBalanceTimestamp;
-    private Enum type;
+    private Type type;
     private List<Movement> accountMovements;
 
     public Account() {
@@ -50,7 +50,7 @@ public class Account implements Serializable{
         return beginBalanceTimestamp;
     }
 
-    public Enum getType() {
+    public Type getType() {
         return type;
     }
 
@@ -82,7 +82,7 @@ public class Account implements Serializable{
         this.beginBalanceTimestamp = beginBalanceTimestamp;
     }
 
-    public void setType(Enum type) {
+    public void setType(Type type) {
         this.type = type;
     }
 
