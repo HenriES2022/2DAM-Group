@@ -14,4 +14,10 @@ import java.util.List;
 public interface DAO {
    public void createMovement(Customer cust, Movement mov);
    public List<Movement> checkMovement(Account ac);
+   public void createAccount (Account ac);
+   public void addCustomer (Account ac);
+   public void checkAccountData (Account ac);
+   public void createCustomer (Customer cus);
+   public void checkCustomerData (Customer cus);
+   public List<Account> checkAccount (Customer cus);
 }
