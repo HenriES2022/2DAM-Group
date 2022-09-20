@@ -12,6 +12,6 @@ import java.util.List;
  * @author iorit
  */
 public interface DAO {
-   public void createMovement(Movement mov);
+   public void createMovement(Customer cust, Movement mov);
    public List<Movement> checkMovement(Account ac);
 }
