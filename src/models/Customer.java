@@ -21,7 +21,7 @@ public class Customer implements Serializable {
     private Integer phone;
     private Integer zip;
     private String email;
-    private List<?> customerAccounts;
+    private List<Account> customerAccounts;
 
     public static long getSerialVersionUID() {
         return serialVersionUID;
@@ -67,7 +67,7 @@ public class Customer implements Serializable {
         return email;
     }
 
-    public List<?> getCustomerAccounts() {
+    public List<Account> getCustomerAccounts() {
         return customerAccounts;
     }
 
@@ -111,7 +111,7 @@ public class Customer implements Serializable {
         this.email = email;
     }
 
-    public void setCustomerAccounts(List<?> customerAccounts) {
+    public void setCustomerAccounts(List<Account> customerAccounts) {
         this.customerAccounts = customerAccounts;
     }
 
