@@ -42,7 +42,7 @@ public class Application {
 
                     break;
                 case 7:
-
+                    controller.createMovement();
                     break;
                 case 8:
                     controller.checkMovements();
