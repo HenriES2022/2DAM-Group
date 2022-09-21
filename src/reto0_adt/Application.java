@@ -4,6 +4,7 @@
  */
 package reto0_adt;
 
+import controller.Controller;
 import controller.utilidades.Util;
 import javax.xml.transform.OutputKeys;
 
@@ -18,7 +19,7 @@ public class Application {
      */
     public static void main(String[] args) {
         int opc;
-
+        Controller controller = new Controller();
         do {
             opc = menu();
             switch (opc) {
@@ -44,7 +45,7 @@ public class Application {
 
                     break;
                 case 8:
-
+                    controller.checkMovements();
                     break;
                 case 9:
 

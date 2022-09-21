@@ -123,5 +123,9 @@ public class Movement implements Serializable{
         return "Movement{" + "id=" + id + ", amount=" + amount + ", balance=" + balance + ", description=" + description + ", date=" + date + ", account_id=" + account_id + '}';
     }
     
+    public void getDatos(){
+        System.out.println(this.id + "    " + this.amount + "    " + this.balance + "    " + this.description + "    " + this.date);
+    }
+    
     
 }
