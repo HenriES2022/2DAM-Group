@@ -13,7 +13,8 @@ import java.util.Objects;
  *
  * @author 2dam
  */
-public class Account implements Serializable{
+public class Account implements Serializable {
+
     private Integer id;
     private String description;
     private float balance;
@@ -57,7 +58,7 @@ public class Account implements Serializable{
     public List<Movement> getAccountMovements() {
         return accountMovements;
     }
-    
+
     public void setId(Integer id) {
         this.id = id;
     }
@@ -141,5 +142,22 @@ public class Account implements Serializable{
             return false;
         }
         return true;
+    }
+
+    public void getDatos(){
+        System.out.println("ID: " +this.getId());
+        System.out.println("Description: " +this.getDescription());
+        System.out.println("Balance: " +this.getBalance());
+        System.out.println("Credit Line: " +this.getCreditLine());
+        System.out.println("Begin Balance: " +this.getBeginBalance());
+        System.out.println("Begin Balance Timestamp: " +this.getBeginBalanceTimestamp());
+        System.out.println("Type: " + this.getType());
+    }
+    
+    public void showMovements() {
+        System.out.println("---Movimientos---");
+        for (Movement am : accountMovements) {
+            am.getDatos();
+        }
     }
 }
