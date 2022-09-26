@@ -6,7 +6,6 @@ package controller;
 
 import controller.utilidades.DataNotFoundException;
 import controller.utilidades.Util;
-import java.util.HashSet;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -249,6 +248,7 @@ public class Controller {
         }
         return null;
     }
+    
     /**
      * Este metodo muestra la informacion de las cuentas en la lista de las cuentas
      * @param accounts Es la lista de cuentas que se va a mostrar
