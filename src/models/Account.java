@@ -17,10 +17,10 @@ public class Account implements Serializable {
 
     private Integer id;
     private String description;
-    private float balance;
-    private float creditLine;
-    private float beginBalance;
-    private float beginBalanceTimestamp;
+    private Float balance;
+    private Float creditLine;
+    private Float beginBalance;
+    private Float beginBalanceTimestamp;
     private Type type;
     private List<Movement> accountMovements;
 
@@ -35,19 +35,19 @@ public class Account implements Serializable {
         return description;
     }
 
-    public float getBalance() {
+    public Float getBalance() {
         return balance;
     }
 
-    public float getCreditLine() {
+    public Float getCreditLine() {
         return creditLine;
     }
 
-    public float getBeginBalance() {
+    public Float getBeginBalance() {
         return beginBalance;
     }
 
-    public float getBeginBalanceTimestamp() {
+    public Float getBeginBalanceTimestamp() {
         return beginBalanceTimestamp;
     }
 
@@ -67,19 +67,19 @@ public class Account implements Serializable {
         this.description = description;
     }
 
-    public void setBalance(float balance) {
+    public void setBalance(Float balance) {
         this.balance = balance;
     }
 
-    public void setCreditLine(float creditLine) {
+    public void setCreditLine(Float creditLine) {
         this.creditLine = creditLine;
     }
 
-    public void setBeginBalance(float beginBalance) {
+    public void setBeginBalance(Float beginBalance) {
         this.beginBalance = beginBalance;
     }
 
-    public void setBeginBalanceTimestamp(float beginBalanceTimestamp) {
+    public void setBeginBalanceTimestamp(Float beginBalanceTimestamp) {
         this.beginBalanceTimestamp = beginBalanceTimestamp;
     }
 

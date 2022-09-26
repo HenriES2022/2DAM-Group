@@ -1,7 +1,8 @@
 package models;
 
 import java.io.Serializable;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.Objects;
 
 /**
@@ -21,7 +22,7 @@ public class Customer implements Serializable {
     private Integer phone;
     private Integer zip;
     private String email;
-    private List<Account> customerAccounts;
+    private Set<Account> customerAccounts;
 
     public static long getSerialVersionUID() {
         return serialVersionUID;
@@ -67,7 +68,7 @@ public class Customer implements Serializable {
         return email;
     }
 
-    public List<Account> getCustomerAccounts() {
+    public Set<Account> getCustomerAccounts() {
         return customerAccounts;
     }
 
@@ -111,11 +112,12 @@ public class Customer implements Serializable {
         this.email = email;
     }
 
-    public void setCustomerAccounts(List<Account> customerAccounts) {
+    public void setCustomerAccounts(Set<Account> customerAccounts) {
         this.customerAccounts = customerAccounts;
     }
 
     public Customer() {
+        this.customerAccounts = new HashSet<>();
     }
 
     @Override
@@ -182,7 +184,17 @@ public class Customer implements Serializable {
 
     @Override
     public String toString() {
-        return "Customer{" + "id=" + id + ", firstName=" + firstName + ", lastName=" + lastName + ", middleName=" + middleName + ", streetName=" + streetName + ", city=" + city + ", state=" + state + ", phone=" + phone + ", zip=" + zip + ", email=" + email + ", customerAccounts=" + customerAccounts + '}';
+        return "Customer:"
+                + "\n\tID: " + id
+                + "\n\tfirstName: " + firstName
+                + "\n\tlastName: " + lastName
+                + "\n\tmiddleName: " + middleName
+                + "\n\tstreetName: " + streetName
+                + "\n\tcity: " + city
+                + "\n\tstate: " + state
+                + "\n\tphone: " + phone
+                + "\n\tzip: " + zip
+                + "\n\temail: " + email;
     }
 
 }

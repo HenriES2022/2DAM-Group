@@ -1,55 +1,60 @@
 /*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
  */
-package models;
+package models.daoImplementacion;
 
-import java.util.List;
+import java.util.Set;
+import models.Account;
+import models.Customer;
+import models.DAO;
+import models.Movement;
 
 /**
  *
- * @author yeguo
+ * @author iorit
  */
-public class DAOImplementacionBD implements DAO{
+public class DAOImplementacionBD implements DAO {
 
     @Override
-    public void createMovement(Customer cust, Movement mov) {
+    public Boolean createMovement(Customer cust, Movement mov) {
         throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
     }
 
     @Override
-    public List<Movement> checkMovement(Account ac) {
+    public Set<Movement> checkMovement(Account ac) {
         throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
     }
 
     @Override
-    public void createAccount(Account ac) {
+    public Boolean createAccount(Account ac) {
         throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
     }
 
     @Override
-    public void addCustomer(Account ac) {
+    public Boolean addCustomer(Account ac) {
         throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
     }
 
     @Override
-    public void checkAccountData(Account ac) {
+    public Boolean checkAccountData(Account ac) {
         throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
     }
 
     @Override
-    public void createCustomer(Customer cus) {
+    public Boolean createCustomer(Customer cus) {
         throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
     }
 
     @Override
-    public void checkCustomerData(Customer cus) {
+    public Customer checkCustomerData(Customer cus) {
         throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
     }
 
     @Override
-    public List<Account> checkAccount(Customer cus) {
+    public Set<Account> checkCustomerAccounts(Customer cus) {
         throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
     }
-    
+
 }

@@ -5,19 +5,28 @@
  */
 package models;
 
-import java.util.List;
+import controller.utilidades.DataNotFoundException;
+import java.util.Set;
 
 /**
  *
  * @author iorit
  */
 public interface DAO {
-   public void createMovement(Customer cust, Movement mov);
-   public List<Movement> checkMovement(Account ac);
-   public void createAccount (Account ac);
-   public void addCustomer (Account ac);
-   public void checkAccountData (Account ac);
-   public void createCustomer (Customer cus);
-   public void checkCustomerData (Customer cus);
-   public List<Account> checkAccount (Customer cus);
+
+    public Boolean createMovement(Customer cust, Movement mov);
+
+    public Set<Movement> checkMovement(Account ac);
+
+    public Boolean createAccount(Account ac);
+
+    public Boolean addCustomer(Account ac);
+
+    public Boolean checkAccountData(Account ac);
+
+    public Boolean createCustomer(Customer cus);
+
+    public Customer checkCustomerData(Customer cus) throws DataNotFoundException;
+
+    public Set<Account> checkCustomerAccounts(Customer cus);
 }
