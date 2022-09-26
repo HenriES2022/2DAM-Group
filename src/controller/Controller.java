@@ -4,8 +4,11 @@
  */
 package controller;
 
+import controller.utilidades.DataNotFoundException;
 import controller.utilidades.Util;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import models.Account;
 import models.Customer;
 import models.DAO;
@@ -16,8 +19,101 @@ import models.Movement;
  * @author yeguo
  */
 public class Controller {
-    
-    
+
+    private final DAO dao = DAOFactory.getDAO();
+
+    /**
+     * Método para crear un cliente
+     *
+     */
+    public void createCustomer() {
+        // Pedir todos los datos del cliente
+        Customer customer = new Customer();
+        customer.setFirstName(Util.introducirCadena("Introduzca el 1º nombre: "));
+        customer.setMiddleName(Util.introducirCadena("Introduzca el 2º nombre: "));
+        customer.setLastName(Util.introducirCadena("Introduzca el apellido: "));
+        customer.setStreetName(Util.introducirCadena("Introduzca el nombre de la calle: "));
+        customer.setCity(Util.introducirCadena("Introduzca la ciudad: "));
+        customer.setState(Util.introducirCadena("Introduzca la region: "));
+        customer.setPhone(Util.leerInt("Introduzca el número de teléfono: "));
+        customer.setZip(Util.leerInt("Introduzca el número Zip: "));
+        customer.setEmail(Util.introducirCadena("Introduzca el email: "));
+        // Crear cliente
+        dao.createCustomer(customer);
+    }
+
+    /**
+     * Método para mostrar los datos de un cliente
+     *
+     * @return Customer
+     */
+    public Customer checkCustomer() {
+        boolean retry = false;
+        Customer foundCustomer = null;
+
+        do {
+            Customer cus = searchCustomerMenu();
+            if (cus != null) {
+                try {
+                    // Buscar cliente
+                    foundCustomer = dao.checkCustomerData(cus);
+                } catch (DataNotFoundException e) {
+                    // Si no encuentra al cliente preguntar volver a intentar
+                    System.out.print("No se ha encontrado al cliente con los datos introducidos.\n"
+                            + "¿Quieres volver a intentarlo?");
+                    retry = Util.esBoolean();
+                }
+            }
+        } while (retry && foundCustomer == null);
+
+        return foundCustomer;
+    }
+
+    /**
+     * Mostrar las cuentas de los clientes
+     *
+     * @param cus Customer
+     * @return Set<Account>
+     */
+    public Set<Account> checkCustomerAccounts(Customer cus) {
+        if (cus != null) {
+            System.out.print("¿Quieres también consultar las cuentas de este cliente?");
+            if (Util.esBoolean()) {
+                return cus.getCustomerAccounts();
+            }
+        } else {
+            cus = checkCustomer();
+            if (cus != null) {
+                return dao.checkCustomerAccounts(cus);
+            }
+        }
+        return null;
+    }
+
+    private Customer searchCustomerMenu() {
+        // Pedir la ID del cliente
+        Customer cus = new Customer();
+        Integer opc = Util.leerInt("-----Buscar un cliente-----"
+                + "Elija una opción: \n"
+                + "1. Buscar por ID\n"
+                + "2. Buscar por nombre y apellido\n"
+                + "4. Salir", 0, 5);
+        switch (opc) {
+            case 1:
+                cus.setId(Util.leerInt("Introduzca el ID del cliente: "));
+                return new Customer();
+            case 2:
+                String nombreApellido = Util.introducirCadena("Introduzca el nombre y apellido del cliente: ");
+                cus.setFirstName(nombreApellido.split("\\s+")[0]);
+                cus.setLastName(nombreApellido.split("\\s+")[1]);
+                return cus;
+            case 4:
+                System.out.println("Volviendo al menú principal...");
+                break;
+        }
+        return null;
+    }
+
     public void createAccount() {
         Account ac = new Account();
         ac.setId(Util.leerInt("Insertar ID: "));
@@ -26,21 +122,21 @@ public class Controller {
         ac.setCreditLine(Util.leerFloat("Introducir Linea de Credito: "));
         ac.setBeginBalance(Util.leerFloat("Introducir Begin Balance: "));
         ac.setBeginBalanceTimestamp(Util.leerFloat("Introducir Begin Balance Timestamp: "));
-        
-        myDao.createAccount(ac);
+
+        dao.createAccount(ac);
     }
 
     public void checkAccountData(Account ac) {
         int id = Util.leerInt("Insertar ID de una Cuenta");
-        if(ac.getId().equals(id)){
+        if (ac.getId().equals(id)) {
             System.out.println("ID: " + ac.getId());
             System.out.println("Description: " + ac.getDescription());
-            System.out.println("Balance: " +ac.getBalance());
-            System.out.println("Credit Line: " +ac.getCreditLine());
-            System.out.println("Begin Balance: " +ac.getBeginBalance());
+            System.out.println("Balance: " + ac.getBalance());
+            System.out.println("Credit Line: " + ac.getCreditLine());
+            System.out.println("Begin Balance: " + ac.getBeginBalance());
             System.out.println("Begin Balance Timestamp: " + ac.getBeginBalanceTimestamp());
-            System.out.println("Type: " +ac.getType());
-        }else{
+            System.out.println("Type: " + ac.getType());
+        } else {
             System.out.println("La Cuenta introducida no existe");
         }
     }
@@ -51,38 +147,35 @@ public class Controller {
         Customer cus = new Customer();
         Account ac = null;
         List<Account> accounts = null;
-        
-        
+
         idCustomer = Util.leerInt("Introduce el id del cliente del que quiere ver las cuentas");
         cus.setId(idCustomer);
-        
-        accounts = myDao.checkAccount(cus);
+
+        accounts = dao.checkAccount(cus);
 
         System.out.println("---CUENTAS---");
         System.out.println("ID    DESCRIPCION    BALANCE    LINEA_CREDITO    SALDO_INICIAL    FECHA_SALDO_INICIAL    TIPO");
-        
 
         showAccounts(accounts);
-        
+
         accountIdSelected = Util.leerInt("Introduce el id de la cuenta de la que quiere ver los movimientos");
         try {
-             ac = searchAccount(accountIdSelected, accounts);
-             ac.showMovements();
+            ac = searchAccount(accountIdSelected, accounts);
+            ac.showMovements();
         } catch (NullPointerException e) {
             System.out.println("No se ha encontrado una cuenta con el id introducido");
         }
-       
-        
+
     }
 
     public void createMovement() {
         Movement mov = null;
         String customerId;
         Account ac = null;
-        
+
     }
-    
-    public Account searchAccount(Integer id, List<Account> accounts){
+
+    public Account searchAccount(Integer id, List<Account> accounts) {
         for (int i = 0; i < accounts.size(); i++) {
             if (accounts.get(i).getId().equals(id)) {
                 return accounts.get(i);
@@ -90,13 +183,13 @@ public class Controller {
         }
         return null;
     }
-    
-    public void showAccounts(List<Account> accounts){
-         for (Account account : accounts) {
-            System.out.println(account.getId() +"    "+ account.getDescription() 
-                    +"    "+ account.getBalance() + "    " + 
-                    account.getCreditLine() +"    "+ account.getBeginBalance()+"    "+
-                    account.getBeginBalanceTimestamp()+"    "+ account.getType()
+
+    public void showAccounts(List<Account> accounts) {
+        for (Account account : accounts) {
+            System.out.println(account.getId() + "    " + account.getDescription()
+                    + "    " + account.getBalance() + "    "
+                    + account.getCreditLine() + "    " + account.getBeginBalance() + "    "
+                    + account.getBeginBalanceTimestamp() + "    " + account.getType()
             );
         }
     }
