@@ -72,6 +72,34 @@ public class Controller {
         myDao.createMovement(cus, mov);
     }
     
+    
+    public void createAccount() {
+        Account ac = new Account();
+        ac.setId(Util.leerInt("Insertar ID: "));
+        ac.setDescription(Util.introducirCadena("Insertar Descripcion: "));
+        ac.setBalance(Util.leerFloat("Introducir Balance: "));
+        ac.setCreditLine(Util.leerFloat("Introducir Linea de Credito: "));
+        ac.setBeginBalance(Util.leerFloat("Introducir Begin Balance: "));
+        ac.setBeginBalanceTimestamp(Util.leerFloat("Introducir Begin Balance Timestamp: "));
+        
+        myDao.createAccount(ac);
+    }
+
+    public void checkAccountData(Account ac) {
+        int id = Util.leerInt("Insertar ID de una Cuenta");
+        if(ac.getId().equals(id)){
+            System.out.println("ID: " + ac.getId());
+            System.out.println("Description: " + ac.getDescription());
+            System.out.println("Balance: " +ac.getBalance());
+            System.out.println("Credit Line: " +ac.getCreditLine());
+            System.out.println("Begin Balance: " +ac.getBeginBalance());
+            System.out.println("Begin Balance Timestamp: " + ac.getBeginBalanceTimestamp());
+            System.out.println("Type: " +ac.getType());
+        }else{
+            System.out.println("La Cuenta introducida no existe");
+        }
+    }
+
     /**
      * Este metodo mustra la informacion de los movimientos de una cuenta
      */

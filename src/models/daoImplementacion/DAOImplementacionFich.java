@@ -55,8 +55,5 @@ public class DAOImplementacionFich implements DAO{
     @Override
     public List<Account> checkAccount(Customer cus) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    
-    
+    }    
 }

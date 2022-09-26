@@ -13,13 +13,14 @@ import java.util.Objects;
  *
  * @author 2dam
  */
-public class Account implements Serializable{
+public class Account implements Serializable {
+
     private Integer id;
     private String description;
-    private float balance;
-    private float creditLine;
-    private float beginBalance;
-    private float beginBalanceTimestamp;
+    private Float balance;
+    private Float creditLine;
+    private Float beginBalance;
+    private Float beginBalanceTimestamp;
     private Type type;
     private List<Movement> accountMovements;
 
@@ -34,19 +35,19 @@ public class Account implements Serializable{
         return description;
     }
 
-    public float getBalance() {
+    public Float getBalance() {
         return balance;
     }
 
-    public float getCreditLine() {
+    public Float getCreditLine() {
         return creditLine;
     }
 
-    public float getBeginBalance() {
+    public Float getBeginBalance() {
         return beginBalance;
     }
 
-    public float getBeginBalanceTimestamp() {
+    public Float getBeginBalanceTimestamp() {
         return beginBalanceTimestamp;
     }
 
@@ -57,7 +58,7 @@ public class Account implements Serializable{
     public List<Movement> getAccountMovements() {
         return accountMovements;
     }
-    
+
     public void setId(Integer id) {
         this.id = id;
     }
@@ -66,19 +67,19 @@ public class Account implements Serializable{
         this.description = description;
     }
 
-    public void setBalance(float balance) {
+    public void setBalance(Float balance) {
         this.balance = balance;
     }
 
-    public void setCreditLine(float creditLine) {
+    public void setCreditLine(Float creditLine) {
         this.creditLine = creditLine;
     }
 
-    public void setBeginBalance(float beginBalance) {
+    public void setBeginBalance(Float beginBalance) {
         this.beginBalance = beginBalance;
     }
 
-    public void setBeginBalanceTimestamp(float beginBalanceTimestamp) {
+    public void setBeginBalanceTimestamp(Float beginBalanceTimestamp) {
         this.beginBalanceTimestamp = beginBalanceTimestamp;
     }
 
@@ -141,5 +142,22 @@ public class Account implements Serializable{
             return false;
         }
         return true;
+    }
+
+    public void getDatos(){
+        System.out.println("ID: " +this.getId());
+        System.out.println("Description: " +this.getDescription());
+        System.out.println("Balance: " +this.getBalance());
+        System.out.println("Credit Line: " +this.getCreditLine());
+        System.out.println("Begin Balance: " +this.getBeginBalance());
+        System.out.println("Begin Balance Timestamp: " +this.getBeginBalanceTimestamp());
+        System.out.println("Type: " + this.getType());
+    }
+    
+    public void showMovements() {
+        System.out.println("---Movimientos---");
+        for (Movement am : accountMovements) {
+            am.getDatos();
+        }
     }
 }
