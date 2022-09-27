@@ -215,6 +215,7 @@ public class Controller {
         Integer accountIdSelected;
         Account ac = null;
         Set<Account> accounts = null;
+        Set<Movement> movements = null;
         
         cus = searchCustomerMenu();
         accounts = dao.checkCustomerAccounts(cus);
@@ -228,7 +229,12 @@ public class Controller {
         accountIdSelected = Util.leerInt("Introduce el id de la cuenta de la que quiere ver los movimientos");
         try {
             ac = searchAccount(accountIdSelected, accounts);
-            ac.showMovements();
+            movements = dao.checkMovement(ac);
+            
+            System.out.println("ID    " + "CANTIDAD    "+ "BALANCE    " + "DESCRIPCION    " + "FECHA");
+            for (Movement mov : movements) {
+                mov.getDatos();
+            }
         } catch (NullPointerException e) {
             System.out.println("No se ha encontrado una cuenta con el id introducido");
         }
