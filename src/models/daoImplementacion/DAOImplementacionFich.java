@@ -16,7 +16,11 @@ import models.Movement;
  * @author iorit
  */
 public class DAOImplementacionFich implements DAO {
-
+    
+    public void volcarSetFichero(){
+        
+    }
+    
     @Override
     public Boolean createMovement(Customer cust, Movement mov) {
         throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
