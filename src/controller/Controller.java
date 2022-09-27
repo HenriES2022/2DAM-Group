@@ -138,7 +138,7 @@ public class Controller {
         cus.setId(idCustomer);
         
         
-        accounts = dao.checkAccount(cus);
+        accounts = (List<Account>) dao.checkCustomerAccounts(cus);
         
         //Cabeceras de la informacion de las cuentas
         System.out.println("---CUENTAS---");
@@ -174,7 +174,9 @@ public class Controller {
         dao.createMovement(cus, mov);
     }
     
-    
+    /**
+     * 
+     */
     public void createAccount() {
         Account ac = new Account();
         ac.setId(Util.leerInt("Insertar ID: "));
@@ -187,6 +189,11 @@ public class Controller {
         dao.createAccount(ac);
     }
 
+    /**
+     * Este metodo muestra la informacion sobre una cuenta en concreto
+     * 
+     * @param ac 
+     */
     public void checkAccountData(Account ac) {
         int id = Util.leerInt("Insertar ID de una Cuenta");
         if (ac.getId().equals(id)) {
@@ -200,6 +207,7 @@ public class Controller {
         } else {
             System.out.println("La Cuenta introducida no existe");
         }
+        dao.checkAccountData(ac);
     }
 
     /**
@@ -215,7 +223,7 @@ public class Controller {
         idCustomer = Util.leerInt("Introduce el id del cliente del que quiere ver las cuentas");
         cus.setId(idCustomer);
 
-        accounts = dao.checkAccount(cus);
+        accounts = (List<Account>) dao.checkCustomerAccounts(cus);
 
         //Cabeceras de la informacion de las cuentas
         System.out.println("---CUENTAS---");
