@@ -5,7 +5,12 @@
  */
 package models.daoImplementacion;
 
+import controller.utilidades.Util;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.ObjectInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -96,9 +101,47 @@ public class DAOImplementacionFich implements DAO {
     public Set<Account> checkCustomerAccounts(Customer cus) {
         return null;
     }
-
-    private Set<Customer> dumpFileToSet() {
-        Set<Customer> customers = new HashSet<Customer>();
-        return null;
+    
+    private Set<Customer> dumpFileToSet(){
+        Set<Customer> customers = new HashSet<>();
+        
+        if (fich.exists()) {
+            Customer cus = null;
+            FileInputStream fis = null;
+            ObjectInputStream ois = null;
+            int fileSize = Util.calculoFichero(fich);
+            
+            try {
+                fis = new FileInputStream(fich);
+                ois = new ObjectInputStream(ois);
+                
+                for (int i = 0; i < fileSize; i++) {
+                    cus = (Customer) ois.readObject();
+                    customers.add(cus);
+                }
+            } catch (FileNotFoundException ex) {
+                System.out.println("El fichero no existe");
+                ex.printStackTrace();
+            } catch (IOException ex) {
+                System.out.println("Error lectura de fichero");
+                ex.printStackTrace();
+            } catch (ClassNotFoundException ex) {
+                ex.printStackTrace();
+            } finally{
+                try {
+                    ois.close();
+                    fis.close();
+                } catch (IOException ex) {
+                    ex.printStackTrace();
+                }
+                
+            }
+            
+            
+        } else{
+            System.out.println("El fichero no existe");
+        }
+        
+        return customers;
     }
 }
