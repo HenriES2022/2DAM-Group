@@ -21,7 +21,7 @@ import models.Movement;
  */
 public class Controller {
 
-    private final DAO dao = DAOFactory.getDAO();
+    private DAO dao = DAOFactory.getDAO();
 
     /**
      * Método para crear un cliente
@@ -131,14 +131,11 @@ public class Controller {
         String movementType = null;
         Movement mov = null;
         Account ac = null;
-        List<Account> accounts = null;
+        Set<Account> accounts = null;
         Customer cus = new Customer();
         
-        idCustomer = Util.leerInt("Introduce el id del cliente del que quiere ver las cuentas");
-        cus.setId(idCustomer);
-        
-        
-        accounts = dao.checkAccount(cus);
+        cus = searchCustomerMenu();
+        accounts = dao.checkCustomerAccounts(cus);
         
         //Cabeceras de la informacion de las cuentas
         System.out.println("---CUENTAS---");
@@ -206,16 +203,13 @@ public class Controller {
      * Este metodo mustra la informacion de los movimientos de una cuenta
      */
     public void checkMovements() {
-        Integer idCustomer;
+        Customer cus = null;
         Integer accountIdSelected;
-        Customer cus = new Customer();
         Account ac = null;
-        List<Account> accounts = null;
-
-        idCustomer = Util.leerInt("Introduce el id del cliente del que quiere ver las cuentas");
-        cus.setId(idCustomer);
-
-        accounts = dao.checkAccount(cus);
+        Set<Account> accounts = null;
+        
+        cus = searchCustomerMenu();
+        accounts = dao.checkCustomerAccounts(cus);
 
         //Cabeceras de la informacion de las cuentas
         System.out.println("---CUENTAS---");
@@ -240,10 +234,10 @@ public class Controller {
      * @param accounts Es la lista de cuentas de este cliente
      * @return Retorna la cuenta que corresponde al id enviado, Retorna nulo en el caso de que no se encuentre la cuenta con ese id
      */
-    public Account searchAccount(Integer id, List<Account> accounts){
-        for (int i = 0; i < accounts.size(); i++) {
-            if (accounts.get(i).getId().equals(id)) {
-                return accounts.get(i);
+    public Account searchAccount(Integer id, Set<Account> accounts){
+        for (Account account : accounts) {
+            if (account.getId().equals(id)) {
+                return account;
             }
         }
         return null;
@@ -253,7 +247,7 @@ public class Controller {
      * Este metodo muestra la informacion de las cuentas en la lista de las cuentas
      * @param accounts Es la lista de cuentas que se va a mostrar
      */
-    public void showAccounts(List<Account> accounts){
+    public void showAccounts(Set<Account> accounts){
          for (Account account : accounts) {
             System.out.println(account.getId() +"    "+ account.getDescription() 
                     +"    "+ account.getBalance() + "    " + 
