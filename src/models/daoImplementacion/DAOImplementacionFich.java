@@ -5,6 +5,7 @@
  */
 package models.daoImplementacion;
 
+import java.io.File;
 import java.util.Set;
 import models.Account;
 import models.Customer;
@@ -16,6 +17,7 @@ import models.Movement;
  * @author iorit
  */
 public class DAOImplementacionFich implements DAO {
+    private File fich = new File("BankFich.obj");
 
     @Override
     public Boolean createMovement(Customer cust, Movement mov) {
@@ -56,5 +58,9 @@ public class DAOImplementacionFich implements DAO {
     public Set<Account> checkCustomerAccounts(Customer cus) {
         return null;
     }
-
+    
+    private Set<Customer> dumpFileToSet(){
+        Set<Customer> customers = new Set<Customer>();
+        return null;
+    }
 }
