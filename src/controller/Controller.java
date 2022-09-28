@@ -126,6 +126,7 @@ public class Controller {
      */
     public void createMovement(){
         Integer idCustomer;
+        Boolean created = false;
         Integer accountIdSelected;
         Float movementAmount;
         String movementType = null;
@@ -168,7 +169,12 @@ public class Controller {
         mov.setAmount(movementAmount);
         
         mov.setDate(Timestamp.valueOf(LocalDateTime.now()));
-        dao.createMovement(cus, mov);
+        created = dao.createMovement(cus, mov);
+        if (created) {
+            System.out.println("El movimiento ha sido creado con exito");
+        } else{
+            System.out.println("Ha habido un error al crear el movimiento");
+        }
     }
     
     /**

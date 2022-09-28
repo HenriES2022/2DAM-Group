@@ -64,7 +64,27 @@ public class DAOImplementacionFich implements DAO {
 
     @Override
     public Boolean createMovement(Customer cust, Movement mov) {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+        Boolean created = false;
+        Set<Customer> customers = dumpFileToSet();
+        Set<Movement> movements = new HashSet<>();
+        
+        for (Customer customer : customers) {
+            if (customer.getId().equals(cust.getId())) {
+                for (Account customerAccount : customer.getCustomerAccounts()) {
+                    if (customerAccount.getId().equals(mov.getAccount_id())) {
+                        customerAccount.getAccountMovements().add(mov);
+                        updateBalance(customerAccount, mov);
+                        created = true;
+                    }
+                }
+            }
+        }
+        
+        if (created) {
+            volcarSetFichero(customers);
+        }
+        
+        return created;
     }
 
     @Override
@@ -158,5 +178,14 @@ public class DAOImplementacionFich implements DAO {
         }
 
         return customers;
+    }
+
+    private void updateBalance(Account customerAccount, Movement mov) {
+        if (mov.getDescription().equalsIgnoreCase("Deposit")) {
+            customerAccount.setBalance(customerAccount.getBalance() + mov.getAmount());
+        }
+        else if(mov.getDescription().equalsIgnoreCase("Payment")){
+            customerAccount.setBalance(customerAccount.getBalance() - mov.getAmount());
+        }
     }
 }
