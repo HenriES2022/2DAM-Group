@@ -8,7 +8,9 @@ package models;
 import java.io.Serializable;
 import java.sql.Timestamp;
 import java.util.List;
+import java.util.HashSet;
 import java.util.Objects;
+import java.util.Set;
 
 /**
  *
@@ -23,9 +25,10 @@ public class Account implements Serializable {
     private Double beginBalance;
     private Timestamp beginBalanceTimestamp;
     private Type type;
-    private List<Movement> accountMovements;
+    private Set<Movement> accountMovements;
 
     public Account() {
+        this.accountMovements = new HashSet<>();
     }
 
     public Long getId() {
@@ -56,7 +59,7 @@ public class Account implements Serializable {
         return type;
     }
 
-    public List<Movement> getAccountMovements() {
+    public Set<Movement> getAccountMovements() {
         return accountMovements;
     }
 
@@ -88,7 +91,7 @@ public class Account implements Serializable {
         this.type = type;
     }
 
-    public void setAccountMovements(List<Movement> accountMovements) {
+    public void setAccountMovements(Set<Movement> accountMovements) {
         this.accountMovements = accountMovements;
     }
 

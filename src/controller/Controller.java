@@ -135,6 +135,7 @@ public class Controller {
     public void createMovement() {
         Long idCustomer;
         Long accountIdSelected;
+        Boolean created = false;
         Double movementAmount;
         String movementType = null;
         Movement mov = null;
@@ -179,9 +180,17 @@ public class Controller {
         mov.setAmount(movementAmount);
 
         mov.setDate(Timestamp.valueOf(LocalDateTime.now()));
-        dao.createMovement(cus, mov);
+        created = dao.createMovement(cus, mov);
+        if (created) {
+            System.out.println("El movimiento ha sido creado con exito");
+        } else{
+            System.out.println("Ha habido un error al crear el movimiento");
+        }
     }
-
+    
+    /**
+     * 
+     */
     public void createAccount() {
         Account ac = new Account();
         ac.setId(Util.leerLong("Insertar ID: "));
@@ -194,6 +203,11 @@ public class Controller {
         dao.createAccount(ac);
     }
 
+    /**
+     * Este metodo muestra la informacion sobre una cuenta en concreto
+     * 
+     * @param ac 
+     */
     public void checkAccountData(Account ac) {
         int id = Util.leerInt("Insertar ID de una Cuenta");
         if (ac.getId().equals(id)) {
@@ -207,6 +221,7 @@ public class Controller {
         } else {
             System.out.println("La Cuenta introducida no existe");
         }
+        dao.checkAccountData(ac);
     }
 
     /**
@@ -217,7 +232,8 @@ public class Controller {
         Long accountIdSelected;
         Account ac = null;
         Set<Account> accounts = null;
-
+        Set<Movement> movements = null;
+        
         cus = searchCustomerMenu();
         try {
             accounts = dao.checkCustomerAccounts(cus);
@@ -234,7 +250,12 @@ public class Controller {
         accountIdSelected = Util.leerLong("Introduce el id de la cuenta de la que quiere ver los movimientos");
         try {
             ac = searchAccount(accountIdSelected, accounts);
-            ac.showMovements();
+            movements = dao.checkMovement(ac);
+            
+            System.out.println("ID    " + "CANTIDAD    "+ "BALANCE    " + "DESCRIPCION    " + "FECHA");
+            for (Movement mov : movements) {
+                mov.getDatos();
+            }
         } catch (NullPointerException e) {
             System.out.println("No se ha encontrado una cuenta con el id introducido");
         }
