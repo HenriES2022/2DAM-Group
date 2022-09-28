@@ -25,13 +25,18 @@ public class ViewClass {
             opc = menu();
             switch (opc) {
                 case 1:
-                    controller.createCustomer();
+                    System.out.println(controller.createCustomer() == true
+                            ? "Se ha creado correctamente" : "Error. No se ha podido crear el cliente.");
                     break;
                 case 2:
                     cus = controller.checkCustomer();
-                    System.out.println(cus.toString());
-                    accCus = controller.checkCustomerAccounts(cus);
-                    iterateSet(accCus);
+                    if (cus != null) {
+                        System.out.println(cus.toString());
+                        accCus = controller.checkCustomerAccounts(cus);
+                        if (accCus != null) {
+                            iterateSet(accCus);
+                        }
+                    }
                     break;
                 case 3:
                     accCus = controller.checkCustomerAccounts(null);
@@ -80,8 +85,11 @@ public class ViewClass {
     private static void iterateSet(Set<Account> accList) {
         if (accList != null) {
             Iterator<Account> iter = accList.iterator();
+            int i = 1;
             while (iter.hasNext()) {
+                System.out.printf("---Cuenta %d---\n", i);
                 iter.next().getDatos();
+                i++;
             }
         }
     }

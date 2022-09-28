@@ -6,6 +6,7 @@
 package models;
 
 import java.io.Serializable;
+import java.sql.Timestamp;
 import java.util.List;
 import java.util.Objects;
 
@@ -15,19 +16,19 @@ import java.util.Objects;
  */
 public class Account implements Serializable {
 
-    private Integer id;
+    private Long id;
     private String description;
-    private Float balance;
-    private Float creditLine;
-    private Float beginBalance;
-    private Float beginBalanceTimestamp;
+    private Double balance;
+    private Double creditLine;
+    private Double beginBalance;
+    private Timestamp beginBalanceTimestamp;
     private Type type;
     private List<Movement> accountMovements;
 
     public Account() {
     }
 
-    public Integer getId() {
+    public Long getId() {
         return id;
     }
 
@@ -35,19 +36,19 @@ public class Account implements Serializable {
         return description;
     }
 
-    public Float getBalance() {
+    public Double getBalance() {
         return balance;
     }
 
-    public Float getCreditLine() {
+    public Double getCreditLine() {
         return creditLine;
     }
 
-    public Float getBeginBalance() {
+    public Double getBeginBalance() {
         return beginBalance;
     }
 
-    public Float getBeginBalanceTimestamp() {
+    public Timestamp getBeginBalanceTimestamp() {
         return beginBalanceTimestamp;
     }
 
@@ -59,7 +60,7 @@ public class Account implements Serializable {
         return accountMovements;
     }
 
-    public void setId(Integer id) {
+    public void setId(Long id) {
         this.id = id;
     }
 
@@ -67,19 +68,19 @@ public class Account implements Serializable {
         this.description = description;
     }
 
-    public void setBalance(Float balance) {
+    public void setBalance(Double balance) {
         this.balance = balance;
     }
 
-    public void setCreditLine(Float creditLine) {
+    public void setCreditLine(Double creditLine) {
         this.creditLine = creditLine;
     }
 
-    public void setBeginBalance(Float beginBalance) {
+    public void setBeginBalance(Double beginBalance) {
         this.beginBalance = beginBalance;
     }
 
-    public void setBeginBalanceTimestamp(Float beginBalanceTimestamp) {
+    public void setBeginBalanceTimestamp(Timestamp beginBalanceTimestamp) {
         this.beginBalanceTimestamp = beginBalanceTimestamp;
     }
 
@@ -93,13 +94,13 @@ public class Account implements Serializable {
 
     @Override
     public int hashCode() {
-        int hash = 7;
+        int hash = 3;
         hash = 59 * hash + Objects.hashCode(this.id);
         hash = 59 * hash + Objects.hashCode(this.description);
-        hash = 59 * hash + Float.floatToIntBits(this.balance);
-        hash = 59 * hash + Float.floatToIntBits(this.creditLine);
-        hash = 59 * hash + Float.floatToIntBits(this.beginBalance);
-        hash = 59 * hash + Float.floatToIntBits(this.beginBalanceTimestamp);
+        hash = 59 * hash + Objects.hashCode(this.balance);
+        hash = 59 * hash + Objects.hashCode(this.creditLine);
+        hash = 59 * hash + Objects.hashCode(this.beginBalance);
+        hash = 59 * hash + Objects.hashCode(this.beginBalanceTimestamp);
         hash = 59 * hash + Objects.hashCode(this.type);
         hash = 59 * hash + Objects.hashCode(this.accountMovements);
         return hash;
@@ -117,41 +118,41 @@ public class Account implements Serializable {
             return false;
         }
         final Account other = (Account) obj;
-        if (Float.floatToIntBits(this.balance) != Float.floatToIntBits(other.balance)) {
-            return false;
-        }
-        if (Float.floatToIntBits(this.creditLine) != Float.floatToIntBits(other.creditLine)) {
-            return false;
-        }
-        if (Float.floatToIntBits(this.beginBalance) != Float.floatToIntBits(other.beginBalance)) {
-            return false;
-        }
-        if (Float.floatToIntBits(this.beginBalanceTimestamp) != Float.floatToIntBits(other.beginBalanceTimestamp)) {
-            return false;
-        }
         if (!Objects.equals(this.description, other.description)) {
             return false;
         }
         if (!Objects.equals(this.id, other.id)) {
             return false;
         }
+        if (!Objects.equals(this.balance, other.balance)) {
+            return false;
+        }
+        if (!Objects.equals(this.creditLine, other.creditLine)) {
+            return false;
+        }
+        if (!Objects.equals(this.beginBalance, other.beginBalance)) {
+            return false;
+        }
+        if (!Objects.equals(this.beginBalanceTimestamp, other.beginBalanceTimestamp)) {
+            return false;
+        }
         if (this.type != other.type) {
             return false;
         }
-        if (!Objects.equals(this.accountMovements, other.accountMovements)) {
-            return false;
-        }
-        return true;
+        return Objects.equals(this.accountMovements, other.accountMovements);
     }
 
+
+
+
     public void getDatos(){
-        System.out.println("ID: " +this.getId());
-        System.out.println("Description: " +this.getDescription());
-        System.out.println("Balance: " +this.getBalance());
-        System.out.println("Credit Line: " +this.getCreditLine());
-        System.out.println("Begin Balance: " +this.getBeginBalance());
-        System.out.println("Begin Balance Timestamp: " +this.getBeginBalanceTimestamp());
-        System.out.println("Type: " + this.getType());
+        System.out.println("\tID: " +this.getId());
+        System.out.println("\tDescription: " +this.getDescription());
+        System.out.println("\tBalance: " +this.getBalance());
+        System.out.println("\tCredit Line: " +this.getCreditLine());
+        System.out.println("\tBegin Balance: " +this.getBeginBalance());
+        System.out.println("\tBegin Balance Timestamp: " +this.getBeginBalanceTimestamp());
+        System.out.println("\tType: " + this.getType());
     }
     
     public void showMovements() {

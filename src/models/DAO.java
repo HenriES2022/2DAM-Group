@@ -28,5 +28,5 @@ public interface DAO {
 
     public Customer checkCustomerData(Customer cus) throws DataNotFoundException;
 
-    public Set<Account> checkCustomerAccounts(Customer cus);
+    public Set<Account> checkCustomerAccounts(Customer cus) throws DataNotFoundException;
 }

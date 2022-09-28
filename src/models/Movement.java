@@ -14,38 +14,38 @@ import java.util.Objects;
  * @author iorit
  */
 public class Movement implements Serializable{
-    private Integer id;
-    private Float amount;
-    private Float balance;
+    private Long id;
+    private Double amount;
+    private Double balance;
     private String description;
     private Timestamp date;
-    private Integer account_id;
+    private Long account_id;
     
     public Movement(){
         
     }
 
-    public Integer getId() {
+    public Long getId() {
         return id;
     }
 
-    public void setId(Integer id) {
+    public void setId(Long id) {
         this.id = id;
     }
 
-    public Float getAmount() {
+    public Double getAmount() {
         return amount;
     }
 
-    public void setAmount(Float amount) {
+    public void setAmount(Double amount) {
         this.amount = amount;
     }
 
-    public Float getBalance() {
+    public Double getBalance() {
         return balance;
     }
 
-    public void setBalance(Float balance) {
+    public void setBalance(Double balance) {
         this.balance = balance;
     }
 
@@ -65,11 +65,11 @@ public class Movement implements Serializable{
         this.date = date;
     }
 
-    public Integer getAccount_id() {
+    public Long getAccount_id() {
         return account_id;
     }
 
-    public void setAccount_id(Integer account_id) {
+    public void setAccount_id(Long account_id) {
         this.account_id = account_id;
     }
 

@@ -12,14 +12,14 @@ import java.util.Objects;
 public class Customer implements Serializable {
 
     private static final long serialVersionUID = 1L;
-    private Integer id;
+    private Long id;
     private String firstName;
     private String lastName;
     private String middleName;
     private String streetName;
     private String city;
     private String state;
-    private Integer phone;
+    private Long phone;
     private Integer zip;
     private String email;
     private Set<Account> customerAccounts;
@@ -28,7 +28,7 @@ public class Customer implements Serializable {
         return serialVersionUID;
     }
 
-    public Integer getId() {
+    public Long getId() {
         return id;
     }
 
@@ -56,7 +56,7 @@ public class Customer implements Serializable {
         return state;
     }
 
-    public Integer getPhone() {
+    public Long getPhone() {
         return phone;
     }
 
@@ -72,7 +72,7 @@ public class Customer implements Serializable {
         return customerAccounts;
     }
 
-    public void setId(Integer id) {
+    public void setId(Long id) {
         this.id = id;
     }
 
@@ -100,7 +100,7 @@ public class Customer implements Serializable {
         this.state = state;
     }
 
-    public void setPhone(Integer phone) {
+    public void setPhone(Long phone) {
         this.phone = phone;
     }
 

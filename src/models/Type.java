@@ -10,6 +10,16 @@ package models;
  * @author 2dam
  */
 public enum Type {
-    STANDAR, 
-    CREDIT;
+    STANDAR(0), 
+    CREDIT(1);
+    
+    private final Integer type;
+    
+    Type(Integer value){
+        this.type = value;
+    }
+    
+    public Integer getType(){
+        return type;
+    }
 }
