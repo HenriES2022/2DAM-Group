@@ -69,7 +69,19 @@ public class DAOImplementacionFich implements DAO {
 
     @Override
     public Set<Movement> checkMovement(Account ac) {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+        Set<Customer> customers = dumpFileToSet();
+        Set<Movement> movements = new HashSet<>();
+
+        for (Customer customer : customers) {
+            for (Account account : customer.getCustomerAccounts()) {
+                if (ac.getId() != null && account.getId().equals(ac.getId())) {
+                    
+                }
+            }
+
+        }
+
+        return null;
     }
 
     @Override
@@ -101,20 +113,20 @@ public class DAOImplementacionFich implements DAO {
     public Set<Account> checkCustomerAccounts(Customer cus) {
         return null;
     }
-    
-    private Set<Customer> dumpFileToSet(){
+
+    private Set<Customer> dumpFileToSet() {
         Set<Customer> customers = new HashSet<>();
-        
+
         if (fich.exists()) {
             Customer cus = null;
             FileInputStream fis = null;
             ObjectInputStream ois = null;
             int fileSize = Util.calculoFichero(fich);
-            
+
             try {
                 fis = new FileInputStream(fich);
                 ois = new ObjectInputStream(ois);
-                
+
                 for (int i = 0; i < fileSize; i++) {
                     cus = (Customer) ois.readObject();
                     customers.add(cus);
@@ -127,21 +139,20 @@ public class DAOImplementacionFich implements DAO {
                 ex.printStackTrace();
             } catch (ClassNotFoundException ex) {
                 ex.printStackTrace();
-            } finally{
+            } finally {
                 try {
                     ois.close();
                     fis.close();
                 } catch (IOException ex) {
                     ex.printStackTrace();
                 }
-                
+
             }
-            
-            
-        } else{
+
+        } else {
             System.out.println("El fichero no existe");
         }
-        
+
         return customers;
     }
 }
