@@ -75,9 +75,13 @@ public class DAOImplementacionFich implements DAO {
         for (Customer customer : customers) {
             for (Account account : customer.getCustomerAccounts()) {
                 if (ac.getId() != null && account.getId().equals(ac.getId())) {
-                    
+                    for (Movement accountMovement : account.getAccountMovements()) {
+                        movements.add(accountMovement);
+                    }
+                    return movements;
                 }
             }
+            
 
         }
 
