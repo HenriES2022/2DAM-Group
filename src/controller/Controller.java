@@ -258,6 +258,8 @@ public class Controller {
             }
         } catch (NullPointerException e) {
             System.out.println("No se ha encontrado una cuenta con el id introducido");
+        } catch (DataNotFoundException ex) {
+            Logger.getLogger(Controller.class.getName()).log(Level.SEVERE, null, ex);
         }
 
     }

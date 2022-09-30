@@ -39,6 +39,11 @@ public class DAOImplementacionBD implements DAO {
             + "INNER JOIN customer_account ON customer_account.accounts_id = account.id)"
             + "WHERE customer_account.customers_id = ?";
 
+    // Movement
+    private final String SEARCH_MOVEMENTS = "SELECT * FROM MOVEMENT WHERE acount_id = ?";
+    private final String CREATE_MOVEMENT = "INSERT INTO movement VALUES(?,?,?,?,?,?)";
+    private final String SEARCH_MOVEMENT_ID = "SELECT MAX(movement.id) FROM moveent";
+
     // Config
     private final String URL = ResourceBundle.getBundle("controller.config").getString("url");
     private final String USER = ResourceBundle.getBundle("controller.config").getString("user");
@@ -75,12 +80,73 @@ public class DAOImplementacionBD implements DAO {
 
     @Override
     public Boolean createMovement(Customer cust, Movement mov) {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+        Boolean created = false;
+        this.openConnection();
+        PreparedStatement stat = null;
+        Long movementID = searchMovementId();
+
+        try {
+            if (movementID > 0) {
+                stat = con.prepareStatement(CREATE_MOVEMENT);
+
+                stat.setLong(1, movementID + 1);
+                stat.setDouble(2, mov.getAmount());
+                stat.setDouble(3, mov.getBalance());
+                stat.setString(4, mov.getDescription());
+                stat.setTimestamp(5, mov.getDate());
+                stat.setLong(6, mov.getAccount_id());
+
+                if (stat.executeUpdate() > 0) {
+                    created = true;
+                }
+            }
+
+        } catch (SQLException e) {
+            created = false;
+        } finally {
+            this.closeConnection();
+        }
+
+        return created;
     }
 
     @Override
-    public Set<Movement> checkMovement(Account ac) {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    public Set<Movement> checkMovement(Account ac) throws DataNotFoundException {
+        this.openConnection();
+        Set<Movement> movements = new HashSet<>();
+        Movement mov = null;
+        ResultSet rs;
+
+        // Try catch con recursos
+        try (PreparedStatement stat = con.prepareStatement(SEARCH_MOVEMENTS)) {
+
+            stat.setLong(1, mov.getAccount_id());
+
+            rs = stat.executeQuery();
+
+            while (rs.next()) {
+                mov = new Movement();
+
+                mov.setId(rs.getLong(1));
+                mov.setAmount(rs.getDouble(2));
+                mov.setBalance(rs.getDouble(3));
+                mov.setDescription(rs.getString(4));
+                mov.setDate(rs.getTimestamp(5));
+                mov.setAccount_id(ac.getId());
+
+                movements.add(mov);
+            }
+
+        } catch (SQLException e) {
+            System.err.println(e);
+        } finally {
+            this.closeConnection();
+            if (mov == null) {
+                throw new DataNotFoundException("No se ha encontrado al cliente con los datos introducidos.");
+            }
+        }
+
+        return movements;
     }
 
     @Override
@@ -103,7 +169,7 @@ public class DAOImplementacionBD implements DAO {
         this.openConnection();
 
         // Try catch con recursos
-        try ( PreparedStatement stat = con.prepareStatement(CREATE_CUSTOMER)) {
+        try (PreparedStatement stat = con.prepareStatement(CREATE_CUSTOMER)) {
             con.setAutoCommit(false);
 
             stat.setString(1, cus.getFirstName());
@@ -140,7 +206,7 @@ public class DAOImplementacionBD implements DAO {
         ResultSet rs;
 
         // Try catch con recursos
-        try ( PreparedStatement stat = (cus.getId() >= 0L
+        try (PreparedStatement stat = (cus.getId() >= 0L
                 ? con.prepareStatement(SEARCH_CUSTOMER_ID)
                 : con.prepareStatement(SEARCH_CUSTOMER_NAME))) {
 
@@ -186,7 +252,7 @@ public class DAOImplementacionBD implements DAO {
         ResultSet rs;
 
         // Try catch con recursos
-        try ( PreparedStatement stat = con.prepareStatement(SEARCH_ACCOUNT_CUSTOMER)) {
+        try (PreparedStatement stat = con.prepareStatement(SEARCH_ACCOUNT_CUSTOMER)) {
 
             stat.setLong(1, cus.getId());
 
@@ -214,6 +280,37 @@ public class DAOImplementacionBD implements DAO {
         }
         return accounts;
 
+    }
+
+    /**
+     * This method search for the lastest movement id
+     *
+     * @return Returns the id of the last movement, if there has been any type
+     * of exception it will return -1
+     */
+    private Long searchMovementId() {
+        Long id = null;
+
+        this.openConnection();
+        ResultSet rs;
+
+        // Try catch con recursos
+        try (PreparedStatement stat = con.prepareStatement(SEARCH_MOVEMENTS)) {
+            rs = stat.executeQuery();
+
+            if (rs.next()) {
+                id = rs.getLong(1);
+            }
+
+        } catch (SQLException e) {
+            System.err.println(e);
+            id = (long) -1;
+        } finally {
+            this.closeConnection();
+
+        }
+
+        return id;
     }
 
 }

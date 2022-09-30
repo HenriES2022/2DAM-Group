@@ -15,7 +15,9 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectOutputStream;
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -66,12 +68,18 @@ public class DAOImplementacionFich implements DAO {
     public Boolean createMovement(Customer cust, Movement mov) {
         Boolean created = false;
         Set<Customer> customers = dumpFileToSet();
-        Set<Movement> movements = new HashSet<>();
+        List<Movement> movements = chargeAllMovements(customers);
+        
         
         for (Customer customer : customers) {
             if (customer.getId().equals(cust.getId())) {
                 for (Account customerAccount : customer.getCustomerAccounts()) {
                     if (customerAccount.getId().equals(mov.getAccount_id())) {
+                        if (movements.isEmpty()) {
+                            mov.setId((long) 1);
+                        } else{
+                            mov.setId((long)movements.get(movements.size()-1).getId()+1);
+                        }
                         customerAccount.getAccountMovements().add(mov);
                         updateBalance(customerAccount, mov);
                         created = true;
@@ -187,5 +195,19 @@ public class DAOImplementacionFich implements DAO {
         else if(mov.getDescription().equalsIgnoreCase("Payment")){
             customerAccount.setBalance(customerAccount.getBalance() - mov.getAmount());
         }
+    }
+
+    private List<Movement> chargeAllMovements(Set<Customer> customers) {
+        List<Movement> ret = new ArrayList<>();
+        
+        for (Customer customer : customers) {
+            for (Account customerAccount : customer.getCustomerAccounts()) {
+                for (Movement accountMovement : customerAccount.getAccountMovements()) {
+                    ret.add(accountMovement);
+                }
+            }
+        }
+        
+        return ret;
     }
 }
