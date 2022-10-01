@@ -67,11 +67,12 @@ public class DAOImplementacionFich implements DAO {
     @Override
     public Boolean createMovement(Customer cust, Movement mov) {
         Boolean created = false;
-        Set<Customer> customers = dumpFileToSet();
-        List<Movement> movements = chargeAllMovements(customers);
+        customerSet = dumpFileToSet();
+        Customer customer = checkCustomerData(cust)
+        List<Movement> movements = chargeAllMovements(customerSet);
         
         
-        for (Customer customer : customers) {
+        for (Customer customer : customerSet) {
             if (customer.getId().equals(cust.getId())) {
                 for (Account customerAccount : customer.getCustomerAccounts()) {
                     if (customerAccount.getId().equals(mov.getAccount_id())) {
@@ -89,7 +90,7 @@ public class DAOImplementacionFich implements DAO {
         }
         
         if (created) {
-            volcarSetFichero(customers);
+            volcarSetFichero(customerSet);
         }
         
         return created;
@@ -97,10 +98,10 @@ public class DAOImplementacionFich implements DAO {
 
     @Override
     public Set<Movement> checkMovement(Account ac) {
-        Set<Customer> customers = dumpFileToSet();
+        customerSet = dumpFileToSet();
         Set<Movement> movements = new HashSet<>();
 
-        for (Customer customer : customers) {
+        for (Customer customer : customerSet) {
             for (Account account : customer.getCustomerAccounts()) {
                 if (ac.getId() != null && account.getId().equals(ac.getId())) {
                     for (Movement accountMovement : account.getAccountMovements()) {
