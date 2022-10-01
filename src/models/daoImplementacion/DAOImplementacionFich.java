@@ -5,6 +5,7 @@
  */
 package models.daoImplementacion;
 
+import controller.utilidades.MyObjectOutputStream;
 import controller.utilidades.Util;
 import java.io.File;
 import java.io.FileInputStream;
@@ -36,7 +37,7 @@ public class DAOImplementacionFich implements DAO {
         FileOutputStream fos = null;
         ObjectOutputStream oos = null;
 
-        if (!customers.isEmpty() && customers != null) {
+        if (customers != null) {
             try {
                 fos = new FileOutputStream(fich);
                 oos = new ObjectOutputStream(fos);
@@ -67,7 +68,7 @@ public class DAOImplementacionFich implements DAO {
         Boolean created = false;
         Set<Customer> customers = dumpFileToSet();
         Set<Movement> movements = new HashSet<>();
-        
+
         for (Customer customer : customers) {
             if (customer.getId().equals(cust.getId())) {
                 for (Account customerAccount : customer.getCustomerAccounts()) {
@@ -79,11 +80,11 @@ public class DAOImplementacionFich implements DAO {
                 }
             }
         }
-        
+
         if (created) {
             volcarSetFichero(customers);
         }
-        
+
         return created;
     }
 
@@ -101,7 +102,6 @@ public class DAOImplementacionFich implements DAO {
                     return movements;
                 }
             }
-            
 
         }
 
@@ -109,8 +109,15 @@ public class DAOImplementacionFich implements DAO {
     }
 
     @Override
-    public Boolean createAccount(Account ac) {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    public Boolean createAccount(Account ac, Customer cus) {
+        boolean created = false;
+        Set<Account> accounts = new HashSet<>();
+        
+        for(Account account: accounts){
+            
+        }
+        
+        return false;
     }
 
     @Override
@@ -120,7 +127,40 @@ public class DAOImplementacionFich implements DAO {
 
     @Override
     public Boolean checkAccountData(Account ac) {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+        Long id;
+        FileInputStream fis = null;
+        ObjectInputStream ois = null;
+
+        if (fich.exists()) {
+            try {
+                fis = new FileInputStream(fich);
+                ois = new ObjectInputStream(fis);
+
+                id = Util.leerLong("Introducir id");
+                if (ac.getId().equals(id)) {
+                    System.out.println(ac.getId());
+                    System.out.println(ac.getDescription());
+                    System.out.println(ac.getBalance());
+                    System.out.println(ac.getCreditLine());
+                    System.out.println(ac.getBeginBalance());
+                    System.out.println(ac.getBeginBalanceTimestamp());
+                    System.out.println(ac.getType());
+                }
+            } catch (FileNotFoundException ex) {
+                Logger.getLogger(DAOImplementacionFich.class.getName()).log(Level.SEVERE, null, ex);
+            } catch (IOException ex) {
+                Logger.getLogger(DAOImplementacionFich.class.getName()).log(Level.SEVERE, null, ex);
+            } finally {
+                try {
+                    ois.close();
+                    fis.close();
+                } catch (IOException ex) {
+                    Logger.getLogger(DAOImplementacionFich.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }
+            return true;
+        }
+        return false;
     }
 
     @Override
@@ -183,8 +223,7 @@ public class DAOImplementacionFich implements DAO {
     private void updateBalance(Account customerAccount, Movement mov) {
         if (mov.getDescription().equalsIgnoreCase("Deposit")) {
             customerAccount.setBalance(customerAccount.getBalance() + mov.getAmount());
-        }
-        else if(mov.getDescription().equalsIgnoreCase("Payment")){
+        } else if (mov.getDescription().equalsIgnoreCase("Payment")) {
             customerAccount.setBalance(customerAccount.getBalance() - mov.getAmount());
         }
     }
