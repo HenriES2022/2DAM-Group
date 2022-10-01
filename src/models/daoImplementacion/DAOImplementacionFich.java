@@ -75,19 +75,24 @@ public class DAOImplementacionFich implements DAO {
         customerSet = dumpFileToSet();
         Customer customer = checkCustomerData(cust);
         List<Movement> movements = chargeAllMovements(customerSet);
-
-        for (Account customerAccount : customer.getCustomerAccounts()) {
-            if (customerAccount.getId().equals(mov.getAccount_id())) {
-                if (movements.isEmpty()) {
-                    mov.setId((long) 1);
-                } else {
-                    mov.setId((long) movements.get(movements.size() - 1).getId() + 1);
+        
+        
+        
+            
+                for (Account customerAccount : customer.getCustomerAccounts()) {
+                    if (customerAccount.getId().equals(mov.getAccount_id())) {
+                        if (movements.isEmpty()) {
+                            mov.setId((long) 1);
+                        } else {
+                            mov.setId((long) movements.get(movements.size() - 1).getId() + 1);
+                        }
+                        customerAccount.getAccountMovements().add(mov);
+                        updateBalance(customerAccount, mov);
+                        created = true;
+                    }
                 }
-                customerAccount.getAccountMovements().add(mov);
-                updateBalance(customerAccount, mov);
-                created = true;
-            }
-        }
+            
+        
 
         if (created) {
             volcarSetFichero(customerSet);
@@ -98,16 +103,19 @@ public class DAOImplementacionFich implements DAO {
 
     @Override
     public Set<Movement> checkMovement(Account ac) {
-        Customer customer = checkCustomerData(cus);
+        customerSet = dumpFileToSet();
         Set<Movement> movements = new HashSet<>();
 
-        for (Account account : customer.getCustomerAccounts()) {
-            if (ac.getId() != null && account.getId().equals(ac.getId())) {
-                for (Movement accountMovement : account.getAccountMovements()) {
-                    movements.add(accountMovement);
+        for (Customer customer : customerSet) {
+            for (Account account : customer.getCustomerAccounts()) {
+                if (ac.getId() != null && account.getId().equals(ac.getId())) {
+                    for (Movement accountMovement : account.getAccountMovements()) {
+                        movements.add(accountMovement);
+                    }
+                    return movements;
                 }
-                return movements;
             }
+
         }
 
         return null;
@@ -117,11 +125,11 @@ public class DAOImplementacionFich implements DAO {
     public Boolean createAccount(Account ac, Customer cus) {
         boolean created = false;
         Set<Account> accounts = new HashSet<>();
-
-        for (Account account : accounts) {
-
+        
+        for(Account account: accounts){
+            
         }
-
+        
         return false;
     }
 
