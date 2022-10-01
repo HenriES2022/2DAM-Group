@@ -38,6 +38,8 @@ public class DAOImplementacionBD implements DAO {
             = "SELECT ACCOUNT.* FROM (ACCOUNT "
             + "INNER JOIN customer_account ON customer_account.accounts_id = account.id)"
             + "WHERE customer_account.customers_id = ?";
+    
+    // Account
     private final String CREATE_ACCOUNT = "INSERT INTO ACCOUNT"
             + "(description,balance,creditLine,beginBalance,beginBalanceTimestamp,type)"
             + "values(?,?,?,?,?,?)";
@@ -130,7 +132,7 @@ public class DAOImplementacionBD implements DAO {
 
             while (rs.next()) {
                 mov = new Movement();
-
+                
                 mov.setId(rs.getLong(1));
                 mov.setAmount(rs.getDouble(2));
                 mov.setBalance(rs.getDouble(3));
@@ -175,7 +177,7 @@ public class DAOImplementacionBD implements DAO {
     }
 
     @Override
-    public Boolean addCustomer(Account ac) {
+    public Boolean addAccountToCustomer(Account ac) {
         throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
     }
 

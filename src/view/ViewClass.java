@@ -19,39 +19,27 @@ public class ViewClass {
 
     public static void run(Controller controller) {
         int opc;
-        Customer cus;
-        Set<Account> accCus;
+
         do {
             opc = menu();
             switch (opc) {
                 case 1:
-                    System.out.println(controller.createCustomer() == true
-                            ? "Se ha creado correctamente" : "Error. No se ha podido crear el cliente.");
+                    controller.createCustomer();
                     break;
                 case 2:
-                    cus = controller.checkCustomer();
-                    if (cus != null) {
-                        System.out.println(cus.toString());
-                        System.out.print("\n¿Quieres ver las cuentas del cliente?");
-                        if (Util.esBoolean()) {
-                            accCus = controller.checkCustomerAccounts(cus);
-                            if (accCus != null) {
-                                iterateSet(accCus);
-                            }
-                        }
-                    }
+                    controller.checkCustomer();
                     break;
                 case 3:
-                    iterateSet(controller.checkCustomerAccounts(controller.checkCustomer()));
+                    controller.checkCustomerAccounts();
                     break;
                 case 4:
-
+                    controller.createAccount();
                     break;
                 case 5:
-
+                    controller.addAccountToCustomer();
                     break;
                 case 6:
-
+                    controller.checkAccountData();
                     break;
                 case 7:
                     controller.createMovement();
@@ -60,7 +48,7 @@ public class ViewClass {
                     controller.checkMovements();
                     break;
                 case 9:
-
+                    System.out.println("Saliendo del programa....");
                     break;
                 default:
                     System.out.println();
@@ -82,18 +70,6 @@ public class ViewClass {
                 + "\n 8. Consultar movimientos de cuenta"
                 + "\n 9. Salir");
         return Util.leerInt("Seleccione una opción: ");
-    }
-
-    private static void iterateSet(Set<Account> accList) {
-        if (accList != null) {
-            Iterator<Account> iter = accList.iterator();
-            int i = 1;
-            while (iter.hasNext()) {
-                System.out.printf("---Cuenta %d---\n", i);
-                iter.next().getDatos();
-                i++;
-            }
-        }
     }
 
 }

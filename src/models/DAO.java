@@ -20,7 +20,7 @@ public interface DAO {
 
     public Boolean createAccount(Account ac, Customer cus);
 
-    public Boolean addCustomer(Account ac);
+    public Boolean addAccountToCustomer(Account ac);
 
     public Boolean checkAccountData(Account ac);
 

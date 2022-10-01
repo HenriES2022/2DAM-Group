@@ -8,6 +8,7 @@ import controller.utilidades.DataNotFoundException;
 import controller.utilidades.Util;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
+import java.util.Iterator;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -29,7 +30,7 @@ public class Controller {
      *
      * @return
      */
-    public Boolean createCustomer() {
+    public void createCustomer() {
         // Pedir todos los datos del cliente
         Customer customer = new Customer();
         customer.setFirstName(Util.introducirCadena("Introduzca el 1º nombre: "));
@@ -42,15 +43,40 @@ public class Controller {
         customer.setZip(Util.leerInt("Introduzca el número Zip: "));
         customer.setEmail(Util.introducirCadena("Introduzca el email: "));
         // Crear cliente
-        return dao.createCustomer(customer);
+        System.out.println(dao.createCustomer(customer) == true
+                ? "Se ha creado correctamente" : "Error. No se ha podido crear el cliente.");
     }
 
     /**
      * Mostrar los datos de un cliente
      *
+     */
+    public void checkCustomer() {
+        Customer customer = getCustomer();
+        if (customer != null) {
+            System.out.println(customer.toString());
+            System.out.print("\n¿Quieres ver las cuentas del cliente? ");
+            if (Util.esBoolean()) {
+                int i = 0;
+                for (Account account : customer.getCustomerAccounts()) {
+                    i += 1;
+                    System.out.printf("---Cuenta %d---\n", i);
+                    account.getDatos();
+                    i++;
+                }
+                if (i == 0) {
+                    System.out.println("Este cliente no tiene ninguna cuenta\n");
+                }
+            }
+        }
+    }
+
+    /**
+     * Método para buscar un cliente
+     *
      * @return Customer
      */
-    public Customer checkCustomer() {
+    private Customer getCustomer() {
         boolean retry = false;
         Customer foundCustomer = null;
         do {
@@ -65,6 +91,7 @@ public class Controller {
                     retry = Util.esBoolean();
                 }
             }
+
         } while (retry && foundCustomer == null);
 
         return foundCustomer;
@@ -73,18 +100,20 @@ public class Controller {
     /**
      * Mostrar las cuentas de los clientes
      *
-     * @param cus Customer
-     * @return Set<Account>
      */
-    public Set<Account> checkCustomerAccounts(Customer cus) {
-        if (cus != null) {
-            try {
-                return dao.checkCustomerAccounts(cus);
-            } catch (DataNotFoundException ex) {
-                System.err.println(ex);
-            }
+    public void checkCustomerAccounts() {
+        int i = 0;
+        for (Account account : getCustomer().getCustomerAccounts()) {
+            i += 1;
+            System.out.printf("---Cuenta %d---\n", i);
+            account.getDatos();
+            i++;
         }
-        return null;
+        if (i == 0) {
+            System.out.println("Este cliente no tiene ninguna cuenta");
+
+        }
+
     }
 
     /**
@@ -97,7 +126,7 @@ public class Controller {
     private Customer searchCustomerMenu() {
         // Pedir la ID del cliente
         Customer cus = new Customer();
-        Integer opc = Util.leerInt("-----Buscar un cliente-----"
+        Integer opc = Util.leerInt("-----Buscar un cliente-----\n"
                 + "Elija una opción: \n"
                 + "1. Buscar por ID\n"
                 + "2. Buscar por nombre y apellido\n"
@@ -108,7 +137,6 @@ public class Controller {
                 return cus;
             case 2:
                 String nombreApellido = Util.introducirCadena("Introduzca el nombre y apellido del cliente: ");
-                cus.setId(-1L);
                 cus.setFirstName(nombreApellido.split("\\s+")[0]);
                 cus.setLastName(nombreApellido.split("\\s+")[1]);
                 return cus;
@@ -201,7 +229,7 @@ public class Controller {
      *
      * @param ac
      */
-    public void checkAccountData(Account ac) {
+    public void checkAccountData() {
         int id = Util.leerInt("Insertar ID de una Cuenta");
         if (ac.getId().equals(id)) {
             System.out.println("ID: " + ac.getId());
@@ -289,4 +317,9 @@ public class Controller {
             );
         }
     }
+
+    public void addAccountToCustomer() {
+        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    }
+
 }

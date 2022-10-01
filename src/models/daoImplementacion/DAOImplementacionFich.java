@@ -98,7 +98,6 @@ public class DAOImplementacionFich implements DAO {
             Logger.getLogger(DAOImplementacionFich.class.getName()).log(Level.SEVERE, null, ex);
         }
 
-
         return created;
     }
 
@@ -136,7 +135,7 @@ public class DAOImplementacionFich implements DAO {
     }
 
     @Override
-    public Boolean addCustomer(Account ac) {
+    public Boolean addAccountToCustomer(Account ac) {
         throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
     }
 
@@ -229,9 +228,10 @@ public class DAOImplementacionFich implements DAO {
 
         if (customerSet != null) {
             return customerSet;
+        } else {
+            customerSet = new HashSet<>();
         }
-        if (fich.exists() && Util.calculoFichero(fich) > 0) {
-            customerSet = new HashSet();
+        if (fich.exists()) {
             Customer cus = null;
             FileInputStream fis = null;
             ObjectInputStream ois = null;
@@ -239,7 +239,7 @@ public class DAOImplementacionFich implements DAO {
 
             try {
                 fis = new FileInputStream(fich);
-                ois = new ObjectInputStream(ois);
+                ois = new ObjectInputStream(fis);
 
                 for (int i = 0; i < fileSize; i++) {
                     cus = (Customer) ois.readObject();
@@ -264,11 +264,7 @@ public class DAOImplementacionFich implements DAO {
                 } catch (IOException ex) {
                     ex.printStackTrace();
                 }
-
             }
-
-        } else {
-            System.out.println("El fichero no existe o no tiene ningun cliente guardado");
         }
 
         return customerSet;
