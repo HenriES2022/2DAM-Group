@@ -22,7 +22,7 @@ public interface DAO {
 
     public Boolean addCustomer(Account ac);
 
-    public Boolean checkAccountData(Account ac);
+    public Account checkAccountData(Account ac) throws DataNotFoundException;
 
     public Boolean createCustomer(Customer cus);
 
