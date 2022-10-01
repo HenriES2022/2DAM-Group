@@ -73,28 +73,25 @@ public class DAOImplementacionFich implements DAO {
     @Override
     public Boolean createMovement(Customer cust, Movement mov) {
         Boolean created = false;
-        Set<Customer> customers = dumpFileToSet();
-        List<Movement> movements = chargeAllMovements(customers);
+        customerSet = dumpFileToSet();
+        Customer customer = checkCustomerData(cust);
+        List<Movement> movements = chargeAllMovements(customerSet);
 
-        for (Customer customer : customers) {
-            if (customer.getId().equals(cust.getId())) {
-                for (Account customerAccount : customer.getCustomerAccounts()) {
-                    if (customerAccount.getId().equals(mov.getAccount_id())) {
-                        if (movements.isEmpty()) {
-                            mov.setId((long) 1);
-                        } else {
-                            mov.setId((long) movements.get(movements.size() - 1).getId() + 1);
-                        }
-                        customerAccount.getAccountMovements().add(mov);
-                        updateBalance(customerAccount, mov);
-                        created = true;
-                    }
+        for (Account customerAccount : customer.getCustomerAccounts()) {
+            if (customerAccount.getId().equals(mov.getAccount_id())) {
+                if (movements.isEmpty()) {
+                    mov.setId((long) 1);
+                } else {
+                    mov.setId((long) movements.get(movements.size() - 1).getId() + 1);
                 }
+                customerAccount.getAccountMovements().add(mov);
+                updateBalance(customerAccount, mov);
+                created = true;
             }
         }
 
         if (created) {
-            volcarSetFichero(customers);
+            volcarSetFichero(customerSet);
         }
 
         return created;
@@ -102,19 +99,16 @@ public class DAOImplementacionFich implements DAO {
 
     @Override
     public Set<Movement> checkMovement(Account ac) {
-        Set<Customer> customers = dumpFileToSet();
+        Customer customer = checkCustomerData(cus);
         Set<Movement> movements = new HashSet<>();
 
-        for (Customer customer : customers) {
-            for (Account account : customer.getCustomerAccounts()) {
-                if (ac.getId() != null && account.getId().equals(ac.getId())) {
-                    for (Movement accountMovement : account.getAccountMovements()) {
-                        movements.add(accountMovement);
-                    }
-                    return movements;
+        for (Account account : customer.getCustomerAccounts()) {
+            if (ac.getId() != null && account.getId().equals(ac.getId())) {
+                for (Movement accountMovement : account.getAccountMovements()) {
+                    movements.add(accountMovement);
                 }
+                return movements;
             }
-
         }
 
         return null;
@@ -123,13 +117,17 @@ public class DAOImplementacionFich implements DAO {
     @Override
     public Boolean createAccount(Account ac, Customer cus) {
         boolean created = false;
-        Set<Account> accounts = new HashSet<>();
+        try {
+            Customer customer = checkCustomerData(cus);
 
-        for (Account account : accounts) {
-
+            customer.getCustomerAccounts().add(ac);
+            created = true;
+        } catch (DataNotFoundException ex) {
+            Logger.getLogger(DAOImplementacionFich.class.getName()).log(Level.SEVERE, "No se ha encontrado al Cliente", ex);
+            return false;
         }
 
-        return false;
+        return created;
     }
 
     @Override
@@ -139,38 +137,15 @@ public class DAOImplementacionFich implements DAO {
 
     @Override
     public Boolean checkAccountData(Account ac) {
-        Long id;
-        FileInputStream fis = null;
-        ObjectInputStream ois = null;
+        Set<Customer> customers = dumpFileToSet();
+        Set<Account> accounts = new HashSet();
 
-        if (fich.exists()) {
-            try {
-                fis = new FileInputStream(fich);
-                ois = new ObjectInputStream(fis);
-
-                id = Util.leerLong("Introducir id");
-                if (ac.getId().equals(id)) {
-                    System.out.println(ac.getId());
-                    System.out.println(ac.getDescription());
-                    System.out.println(ac.getBalance());
-                    System.out.println(ac.getCreditLine());
-                    System.out.println(ac.getBeginBalance());
-                    System.out.println(ac.getBeginBalanceTimestamp());
-                    System.out.println(ac.getType());
-                }
-            } catch (FileNotFoundException ex) {
-                Logger.getLogger(DAOImplementacionFich.class.getName()).log(Level.SEVERE, null, ex);
-            } catch (IOException ex) {
-                Logger.getLogger(DAOImplementacionFich.class.getName()).log(Level.SEVERE, null, ex);
-            } finally {
-                try {
-                    ois.close();
-                    fis.close();
-                } catch (IOException ex) {
-                    Logger.getLogger(DAOImplementacionFich.class.getName()).log(Level.SEVERE, null, ex);
+        for (Customer customer : customers) {
+            for (Account account : customer.getCustomerAccounts()) {
+                if (ac.getId() != null && account.getId().equals(ac.getId())) {
+                    accounts.add(ac);
                 }
             }
-            return true;
         }
         return false;
     }
