@@ -74,25 +74,30 @@ public class DAOImplementacionFich implements DAO {
     public Boolean createMovement(Customer cust, Movement mov) {
         Boolean created = false;
         customerSet = dumpFileToSet();
-        Customer customer = checkCustomerData(cust);
-        List<Movement> movements = chargeAllMovements(customerSet);
+        Customer customer;
+        try {
+            customer = checkCustomerData(cust);
+            List<Movement> movements = chargeAllMovements(customerSet);
 
-        for (Account customerAccount : customer.getCustomerAccounts()) {
-            if (customerAccount.getId().equals(mov.getAccount_id())) {
-                if (movements.isEmpty()) {
-                    mov.setId((long) 1);
-                } else {
-                    mov.setId((long) movements.get(movements.size() - 1).getId() + 1);
+            for (Account customerAccount : customer.getCustomerAccounts()) {
+                if (customerAccount.getId().equals(mov.getAccount_id())) {
+                    if (movements.isEmpty()) {
+                        mov.setId((long) 1);
+                    } else {
+                        mov.setId((long) movements.get(movements.size() - 1).getId() + 1);
+                    }
+                    customerAccount.getAccountMovements().add(mov);
+                    updateBalance(customerAccount, mov);
+                    created = true;
                 }
-                customerAccount.getAccountMovements().add(mov);
-                updateBalance(customerAccount, mov);
-                created = true;
             }
+            if (created) {
+                volcarSetFichero(customerSet);
+            }
+        } catch (DataNotFoundException ex) {
+            Logger.getLogger(DAOImplementacionFich.class.getName()).log(Level.SEVERE, null, ex);
         }
 
-        if (created) {
-            volcarSetFichero(customerSet);
-        }
 
         return created;
     }
