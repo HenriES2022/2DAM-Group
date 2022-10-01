@@ -18,7 +18,7 @@ public interface DAO {
 
     public Set<Movement> checkMovement(Account ac) throws DataNotFoundException;
 
-    public Boolean createAccount(Account ac);
+    public Boolean createAccount(Account ac, Customer cus);
 
     public Boolean addCustomer(Account ac);
 

@@ -38,6 +38,10 @@ public class DAOImplementacionBD implements DAO {
             = "SELECT ACCOUNT.* FROM (ACCOUNT "
             + "INNER JOIN customer_account ON customer_account.accounts_id = account.id)"
             + "WHERE customer_account.customers_id = ?";
+    private final String CREATE_ACCOUNT = "INSERT INTO ACCOUNT"
+            + "(description,balance,creditLine,beginBalance,beginBalanceTimestamp,type)"
+            + "values(?,?,?,?,?,?)";
+    private final String SEARCH_ACCOUNT_DATA = "SELECT * FROM ACCOUNT WHERE id = ?";
 
     // Movement
     private final String SEARCH_MOVEMENTS = "SELECT * FROM MOVEMENT WHERE acount_id = ?";
@@ -118,7 +122,7 @@ public class DAOImplementacionBD implements DAO {
         ResultSet rs;
 
         // Try catch con recursos
-        try (PreparedStatement stat = con.prepareStatement(SEARCH_MOVEMENTS)) {
+        try ( PreparedStatement stat = con.prepareStatement(SEARCH_MOVEMENTS)) {
 
             stat.setLong(1, mov.getAccount_id());
 
@@ -150,8 +154,24 @@ public class DAOImplementacionBD implements DAO {
     }
 
     @Override
-    public Boolean createAccount(Account ac) {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    public Boolean createAccount(Account ac, Customer cus) {
+        this.openConnection();
+        try ( PreparedStatement stat = con.prepareStatement(CREATE_ACCOUNT)) {
+            con.setAutoCommit(false);
+
+            stat.setString(1, ac.getDescription());
+            stat.setString(2, ac.getBalance().toString());
+            stat.setString(3, ac.getCreditLine().toString());
+            stat.setString(4, ac.getBeginBalance().toString());
+            stat.setString(5, ac.getBeginBalanceTimestamp().toString());
+            stat.setString(6, ac.getType().toString());
+
+        } catch (SQLException e) {
+            rollback();
+            System.err.println(e);
+            return false;
+        }
+        return null;
     }
 
     @Override
@@ -161,7 +181,29 @@ public class DAOImplementacionBD implements DAO {
 
     @Override
     public Boolean checkAccountData(Account ac) {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+        this.openConnection();
+        ResultSet rs;
+        try ( PreparedStatement stat = con.prepareStatement(SEARCH_ACCOUNT_DATA)) {
+            con.setAutoCommit(false);
+
+            stat.setLong(1, ac.getId());
+
+            rs = stat.executeQuery();
+
+            stat.setLong(1, ac.getId());
+            stat.setString(2, ac.getDescription());
+            stat.setDouble(3, ac.getBalance());
+            stat.setDouble(4, ac.getCreditLine());
+            stat.setDouble(5, ac.getBeginBalance());
+            stat.setTimestamp(6, ac.getBeginBalanceTimestamp());
+            stat.setString(7, ac.getType().toString());
+
+        } catch (SQLException e) {
+            rollback();
+            System.err.println(e);
+            return false;
+        }
+        return true;
     }
 
     @Override
@@ -169,8 +211,7 @@ public class DAOImplementacionBD implements DAO {
         this.openConnection();
 
         // Try catch con recursos
-        try (PreparedStatement stat = con.prepareStatement(CREATE_CUSTOMER)) {
-            con.setAutoCommit(false);
+        try ( PreparedStatement stat = con.prepareStatement(CREATE_CUSTOMER)) {
 
             stat.setString(1, cus.getFirstName());
             stat.setString(2, cus.getLastName());
@@ -182,12 +223,7 @@ public class DAOImplementacionBD implements DAO {
             stat.setLong(8, cus.getPhone());
             stat.setString(9, cus.getEmail());
 
-            stat.executeUpdate();
-
-            con.commit();
-            con.setAutoCommit(true);
-
-            return true;
+            return stat.executeUpdate() > 0;
 
         } catch (SQLException e) {
             rollback();
@@ -206,11 +242,11 @@ public class DAOImplementacionBD implements DAO {
         ResultSet rs;
 
         // Try catch con recursos
-        try (PreparedStatement stat = (cus.getId() >= 0L
+        try ( PreparedStatement stat = (cus.getId() >= 0L
                 ? con.prepareStatement(SEARCH_CUSTOMER_ID)
                 : con.prepareStatement(SEARCH_CUSTOMER_NAME))) {
 
-            if (cus.getId() >= 0L) {
+            if (cus.getId() != null) {
                 stat.setLong(1, cus.getId());
             } else {
                 stat.setString(1, cus.getFirstName());
@@ -252,7 +288,7 @@ public class DAOImplementacionBD implements DAO {
         ResultSet rs;
 
         // Try catch con recursos
-        try (PreparedStatement stat = con.prepareStatement(SEARCH_ACCOUNT_CUSTOMER)) {
+        try ( PreparedStatement stat = con.prepareStatement(SEARCH_ACCOUNT_CUSTOMER)) {
 
             stat.setLong(1, cus.getId());
 
@@ -275,7 +311,7 @@ public class DAOImplementacionBD implements DAO {
         } finally {
             this.closeConnection();
             if (acc == null) {
-                throw new DataNotFoundException("No se ha encontrado al cliente con los datos introducidos.");
+                throw new DataNotFoundException("No se ha encontrado ninguna cuenta del cliente con los datos introducidos.");
             }
         }
         return accounts;
@@ -295,7 +331,7 @@ public class DAOImplementacionBD implements DAO {
         ResultSet rs;
 
         // Try catch con recursos
-        try (PreparedStatement stat = con.prepareStatement(SEARCH_MOVEMENTS)) {
+        try ( PreparedStatement stat = con.prepareStatement(SEARCH_MOVEMENTS)) {
             rs = stat.executeQuery();
 
             if (rs.next()) {

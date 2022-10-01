@@ -193,6 +193,8 @@ public class Controller {
      */
     public void createAccount() {
         Account ac = new Account();
+        Customer cus = new Customer();
+        
         ac.setId(Util.leerLong("Insertar ID: "));
         ac.setDescription(Util.introducirCadena("Insertar Descripcion: "));
         ac.setBalance(Util.leerDouble("Introducir Balance: "));
@@ -200,7 +202,7 @@ public class Controller {
         ac.setBeginBalance(Util.leerDouble("Introducir Begin Balance: "));
         ac.setBeginBalanceTimestamp(Timestamp.valueOf(LocalDateTime.now()));
 
-        dao.createAccount(ac);
+        dao.createAccount(ac, cus);
     }
 
     /**
