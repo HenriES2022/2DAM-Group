@@ -118,7 +118,7 @@ public class DAOImplementacionBD implements DAO {
         ResultSet rs;
 
         // Try catch con recursos
-        try (PreparedStatement stat = con.prepareStatement(SEARCH_MOVEMENTS)) {
+        try ( PreparedStatement stat = con.prepareStatement(SEARCH_MOVEMENTS)) {
 
             stat.setLong(1, mov.getAccount_id());
 
@@ -169,8 +169,7 @@ public class DAOImplementacionBD implements DAO {
         this.openConnection();
 
         // Try catch con recursos
-        try (PreparedStatement stat = con.prepareStatement(CREATE_CUSTOMER)) {
-            con.setAutoCommit(false);
+        try ( PreparedStatement stat = con.prepareStatement(CREATE_CUSTOMER)) {
 
             stat.setString(1, cus.getFirstName());
             stat.setString(2, cus.getLastName());
@@ -182,12 +181,7 @@ public class DAOImplementacionBD implements DAO {
             stat.setLong(8, cus.getPhone());
             stat.setString(9, cus.getEmail());
 
-            stat.executeUpdate();
-
-            con.commit();
-            con.setAutoCommit(true);
-
-            return true;
+            return stat.executeUpdate() > 0;
 
         } catch (SQLException e) {
             rollback();
@@ -206,11 +200,11 @@ public class DAOImplementacionBD implements DAO {
         ResultSet rs;
 
         // Try catch con recursos
-        try (PreparedStatement stat = (cus.getId() >= 0L
+        try ( PreparedStatement stat = (cus.getId() >= 0L
                 ? con.prepareStatement(SEARCH_CUSTOMER_ID)
                 : con.prepareStatement(SEARCH_CUSTOMER_NAME))) {
 
-            if (cus.getId() >= 0L) {
+            if (cus.getId() != null) {
                 stat.setLong(1, cus.getId());
             } else {
                 stat.setString(1, cus.getFirstName());
@@ -252,7 +246,7 @@ public class DAOImplementacionBD implements DAO {
         ResultSet rs;
 
         // Try catch con recursos
-        try (PreparedStatement stat = con.prepareStatement(SEARCH_ACCOUNT_CUSTOMER)) {
+        try ( PreparedStatement stat = con.prepareStatement(SEARCH_ACCOUNT_CUSTOMER)) {
 
             stat.setLong(1, cus.getId());
 
@@ -275,7 +269,7 @@ public class DAOImplementacionBD implements DAO {
         } finally {
             this.closeConnection();
             if (acc == null) {
-                throw new DataNotFoundException("No se ha encontrado al cliente con los datos introducidos.");
+                throw new DataNotFoundException("No se ha encontrado ninguna cuenta del cliente con los datos introducidos.");
             }
         }
         return accounts;
@@ -295,7 +289,7 @@ public class DAOImplementacionBD implements DAO {
         ResultSet rs;
 
         // Try catch con recursos
-        try (PreparedStatement stat = con.prepareStatement(SEARCH_MOVEMENTS)) {
+        try ( PreparedStatement stat = con.prepareStatement(SEARCH_MOVEMENTS)) {
             rs = stat.executeQuery();
 
             if (rs.next()) {
