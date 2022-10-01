@@ -34,6 +34,7 @@ import models.Movement;
 public class DAOImplementacionFich implements DAO {
 
     private final File fich = new File("BankFich.obj");
+    private static Set<Customer> customerSet = null;
 
     public boolean volcarSetFichero(Set<Customer> customers) {
         FileOutputStream fos = null;
@@ -123,11 +124,11 @@ public class DAOImplementacionFich implements DAO {
     public Boolean createAccount(Account ac, Customer cus) {
         boolean created = false;
         Set<Account> accounts = new HashSet<>();
-        
-        for(Account account: accounts){
-            
+
+        for (Account account : accounts) {
+
         }
-        
+
         return false;
     }
 
@@ -245,9 +246,12 @@ public class DAOImplementacionFich implements DAO {
     }
 
     private Set<Customer> dumpFileToSet() {
-        Set<Customer> customers = new HashSet<>();
 
+        if (customerSet != null) {
+            return customerSet;
+        }
         if (fich.exists() && Util.calculoFichero(fich) > 0) {
+            customerSet = new HashSet();
             Customer cus = null;
             FileInputStream fis = null;
             ObjectInputStream ois = null;
@@ -259,7 +263,7 @@ public class DAOImplementacionFich implements DAO {
 
                 for (int i = 0; i < fileSize; i++) {
                     cus = (Customer) ois.readObject();
-                    customers.add(cus);
+                    customerSet.add(cus);
                 }
             } catch (FileNotFoundException ex) {
                 System.out.println("El fichero no existe");
@@ -287,7 +291,7 @@ public class DAOImplementacionFich implements DAO {
             System.out.println("El fichero no existe o no tiene ningun cliente guardado");
         }
 
-        return customers;
+        return customerSet;
     }
 
     private void updateBalance(Account customerAccount, Movement mov) {
