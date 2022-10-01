@@ -125,11 +125,24 @@ public class DAOImplementacionFich implements DAO {
     public Boolean createAccount(Account ac, Customer cus) {
         boolean created = false;
         customerSet = dumpFileToSet();
+        Long id = 0L;
+        
         try {
             Customer customer = checkCustomerData(cus);
             customerSet.remove(customer);
-            customer.getCustomerAccounts().add(ac);
+
+            if (!customerSet.isEmpty()) {
+                for (Account customerAccount : customer.getCustomerAccounts()) {
+                    if (id < customerAccount.getId()) {
+                        id = customerAccount.getId();
+                    }
+                }
+            }
             
+            ac.setId(id+1);
+
+            customer.getCustomerAccounts().add(ac);
+
             customerSet.add(customer);
             created = true;
         } catch (DataNotFoundException ex) {
@@ -143,18 +156,23 @@ public class DAOImplementacionFich implements DAO {
     }
 
     @Override
-    public Boolean addAccountToCustomer(Account ac) {
+    public Boolean addAccountToCustomer(Account ac, Customer cus) {
         throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
     }
 
     @Override
-    public Account checkAccountData(Account ac) {
+    public Account checkAccountData(Account ac) throws DataNotFoundException {
         customerSet = dumpFileToSet();
-        Account account = null;
-        
-        
-        
-        return account;
+
+        for (Customer customer : customerSet) {
+            for (Account customerAccount : customer.getCustomerAccounts()) {
+                if (customerAccount.getId().equals(ac.getId())) {
+                    return customerAccount;
+                }
+            }
+        }
+
+        throw new DataNotFoundException("No se ha encontrado la cuenta que busca");
     }
 
     /**

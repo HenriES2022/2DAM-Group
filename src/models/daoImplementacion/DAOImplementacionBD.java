@@ -185,8 +185,9 @@ public class DAOImplementacionBD implements DAO {
     }
 
     @Override
-    public Boolean addAccountToCustomer(Account ac) {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    public Boolean addAccountToCustomer(Account ac, Customer cus) {
+        
+        return false;
     }
 
     @Override
