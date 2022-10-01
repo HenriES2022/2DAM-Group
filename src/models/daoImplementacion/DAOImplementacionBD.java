@@ -38,7 +38,7 @@ public class DAOImplementacionBD implements DAO {
             = "SELECT ACCOUNT.* FROM (ACCOUNT "
             + "INNER JOIN customer_account ON customer_account.accounts_id = account.id)"
             + "WHERE customer_account.customers_id = ?";
-    
+
     // Account
     private final String CREATE_ACCOUNT = "INSERT INTO ACCOUNT"
             + "(description,balance,creditLine,beginBalance,beginBalanceTimestamp,type)"
@@ -132,7 +132,7 @@ public class DAOImplementacionBD implements DAO {
 
             while (rs.next()) {
                 mov = new Movement();
-                
+
                 mov.setId(rs.getLong(1));
                 mov.setAmount(rs.getDouble(2));
                 mov.setBalance(rs.getDouble(3));
@@ -164,33 +164,33 @@ public class DAOImplementacionBD implements DAO {
             stat.setDouble(3, ac.getCreditLine());
             stat.setDouble(4, ac.getBeginBalance());
             stat.setTimestamp(5, ac.getBeginBalanceTimestamp());
-            
+
             if (ac.getType().equals(Type.STANDAR)) {
                 stat.setInt(6, Type.STANDAR.getType());
             }
             if (ac.getType().equals(Type.CREDIT)) {
                 stat.setInt(6, Type.CREDIT.getType());
             }
-            
+
             stat.executeUpdate();
 
         } catch (SQLException e) {
             rollback();
             System.err.println(e);
             return false;
-        }finally{
+        } finally {
             this.closeConnection();
         }
         return true;
     }
 
     @Override
-    public Boolean addAccountToCustomer(Account ac) {
+    public Boolean addAccountToCustomer(Customer cus, Account ac) {
         throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
     }
 
     @Override
-    public Account checkAccountData(Account ac) throws DataNotFoundException{
+    public Account checkAccountData(Account ac) throws DataNotFoundException {
         this.openConnection();
         ResultSet rs;
         Account account = null;
@@ -200,9 +200,9 @@ public class DAOImplementacionBD implements DAO {
             stat.setLong(1, ac.getId());
 
             rs = stat.executeQuery();
-            
+
             account = new Account();
-            
+
             account.setId(ac.getId());
             account.setBalance(rs.getDouble(2));
             account.setBeginBalance(rs.getDouble(3));
@@ -215,12 +215,11 @@ public class DAOImplementacionBD implements DAO {
             if (rs.getInt(7) == 1) {
                 account.setType(Type.valueOf("CREDIT"));
             }
-            
 
         } catch (SQLException e) {
             System.err.println(e);
-            
-        } finally{
+
+        } finally {
             this.closeConnection();
             if (account == null) {
                 throw new DataNotFoundException("No se ha encontrado la cuenta con los datos introducidos");

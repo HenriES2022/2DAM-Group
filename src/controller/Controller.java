@@ -16,6 +16,7 @@ import models.Account;
 import models.Customer;
 import models.DAO;
 import models.Movement;
+import models.Type;
 
 /**
  *
@@ -126,7 +127,7 @@ public class Controller {
     private Customer searchCustomerMenu() {
         // Pedir la ID del cliente
         Customer cus = new Customer();
-        Integer opc = Util.leerInt("-----Buscar un cliente-----\n"
+        Integer opc = Util.leerInt("-----Buscar cliente-----\n"
                 + "Elija una opción: \n"
                 + "1. Buscar por ID\n"
                 + "2. Buscar por nombre y apellido\n"
@@ -211,38 +212,37 @@ public class Controller {
      *
      */
     public void createAccount() {
-        Account ac = new Account();
-        Customer cus = new Customer();
+        Customer cus = getCustomer();
 
-        ac.setId(Util.leerLong("Insertar ID: "));
-        ac.setDescription(Util.introducirCadena("Insertar Descripcion: "));
-        ac.setBalance(Util.leerDouble("Introducir Balance: "));
-        ac.setCreditLine(Util.leerDouble("Introducir Linea de Credito: "));
-        ac.setBeginBalance(Util.leerDouble("Introducir Begin Balance: "));
-        ac.setBeginBalanceTimestamp(Timestamp.valueOf(LocalDateTime.now()));
+        if (cus != null) {
+            Account ac = new Account();
+            ac.setDescription(Util.introducirCadena("Insertar Descripcion: "));
+            ac.setBeginBalance(Util.leerDouble("Introducir Balance Actual: "));
+            ac.setBalance(ac.getBeginBalance());
+            ac.setCreditLine(Util.leerDouble("Introducir Linea de Credito: "));
+            ac.setBeginBalanceTimestamp(Timestamp.valueOf(LocalDateTime.now()));
+            if (Util.leerInt("¿Que tipo de cuenta es:? \n\t1.Estandar \n\t2.Credito", 0, 3) != 0) {
+                ac.setType(Type.STANDAR);
+            } else {
+                ac.setType(Type.CREDIT);
+            }
 
-        dao.createAccount(ac, cus);
+            dao.createAccount(ac, cus);
+        }
     }
 
     /**
      * Este metodo muestra la informacion sobre una cuenta en concreto
      *
-     * @param ac
      */
     public void checkAccountData() {
-        int id = Util.leerInt("Insertar ID de una Cuenta");
-        if (ac.getId().equals(id)) {
-            System.out.println("ID: " + ac.getId());
-            System.out.println("Description: " + ac.getDescription());
-            System.out.println("Balance: " + ac.getBalance());
-            System.out.println("Credit Line: " + ac.getCreditLine());
-            System.out.println("Begin Balance: " + ac.getBeginBalance());
-            System.out.println("Begin Balance Timestamp: " + ac.getBeginBalanceTimestamp());
-            System.out.println("Type: " + ac.getType());
-        } else {
-            System.out.println("La Cuenta introducida no existe");
+        try {
+            Account acc = new Account();
+            acc.setId(Util.leerLong("Inserta ID de una Cuenta:"));
+            dao.checkAccountData(acc);
+        } catch (DataNotFoundException ex) {
+            Logger.getLogger(Controller.class.getName()).log(Level.SEVERE, "La cuenta con la ID insertada no se existe", ex);
         }
-        dao.checkAccountData(ac);
     }
 
     /**
@@ -258,31 +258,31 @@ public class Controller {
         cus = searchCustomerMenu();
         try {
             accounts = dao.checkCustomerAccounts(cus);
-        } catch (DataNotFoundException ex) {
-            Logger.getLogger(Controller.class.getName()).log(Level.SEVERE, null, ex);
-        }
 
-        //Cabeceras de la informacion de las cuentas
-        System.out.println("---CUENTAS---");
-        System.out.println("ID    DESCRIPCION    BALANCE    LINEA_CREDITO    SALDO_INICIAL    FECHA_SALDO_INICIAL    TIPO");
+            //Cabeceras de la informacion de las cuentas
+            System.out.println("---CUENTAS---");
+            System.out.println("ID    DESCRIPCION    BALANCE    LINEA_CREDITO    SALDO_INICIAL    FECHA_SALDO_INICIAL    TIPO");
 
-        showAccounts(accounts);
+            showAccounts(accounts);
 
-        accountIdSelected = Util.leerLong("Introduce el id de la cuenta de la que quiere ver los movimientos");
-        try {
-            ac = searchAccount(accountIdSelected, accounts);
-            movements = dao.checkMovement(ac);
+            accountIdSelected = Util.leerLong("Introduce el id de la cuenta de la que quiere ver los movimientos");
+            try {
+                ac = searchAccount(accountIdSelected, accounts);
+                movements = dao.checkMovement(ac);
 
-            System.out.println("ID    " + "CANTIDAD    " + "BALANCE    " + "DESCRIPCION    " + "FECHA");
-            for (Movement mov : movements) {
-                mov.getDatos();
+                System.out.println("ID    " + "CANTIDAD    " + "BALANCE    " + "DESCRIPCION    " + "FECHA");
+                for (Movement mov : movements) {
+                    mov.getDatos();
+                }
+            } catch (NullPointerException e) {
+                System.out.println("No se ha encontrado una cuenta con el id introducido");
+            } catch (DataNotFoundException ex) {
+                Logger.getLogger(Controller.class.getName()).log(Level.SEVERE, null, ex);
             }
-        } catch (NullPointerException e) {
-            System.out.println("No se ha encontrado una cuenta con el id introducido");
+
         } catch (DataNotFoundException ex) {
             Logger.getLogger(Controller.class.getName()).log(Level.SEVERE, null, ex);
         }
-
     }
 
     /**
@@ -319,7 +319,15 @@ public class Controller {
     }
 
     public void addAccountToCustomer() {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+        System.out.println("¿A que cliente quiere añadir la cuenta?");
+        Customer cus = getCustomer();
+
+        System.out.println("Inserte la ID de la cuenta que quieres añadir al cliente");
+        Account acc = new Account();
+        acc.setId(Util.leerLong("Inserta ID de una Cuenta:"));
+
+        dao.addAccountToCustomer(cus, acc);
+
     }
 
 }

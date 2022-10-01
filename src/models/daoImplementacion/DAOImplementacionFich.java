@@ -9,8 +9,6 @@ import controller.utilidades.DataNotFoundException;
 import controller.utilidades.Util;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -129,7 +127,7 @@ public class DAOImplementacionFich implements DAO {
             Customer customer = checkCustomerData(cus);
             customerSet.remove(customer);
             customer.getCustomerAccounts().add(ac);
-            
+
             customerSet.add(customer);
             created = true;
         } catch (DataNotFoundException ex) {
@@ -143,7 +141,7 @@ public class DAOImplementacionFich implements DAO {
     }
 
     @Override
-    public Boolean addAccountToCustomer(Account ac) {
+    public Boolean addAccountToCustomer(Customer cus, Account ac) {
         throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
     }
 
@@ -151,9 +149,7 @@ public class DAOImplementacionFich implements DAO {
     public Account checkAccountData(Account ac) {
         customerSet = dumpFileToSet();
         Account account = null;
-        
-        
-        
+
         return account;
     }
 

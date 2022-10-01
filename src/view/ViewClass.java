@@ -6,10 +6,6 @@ package view;
 
 import controller.Controller;
 import controller.utilidades.Util;
-import java.util.Iterator;
-import java.util.Set;
-import models.Account;
-import models.Customer;
 
 /**
  *
