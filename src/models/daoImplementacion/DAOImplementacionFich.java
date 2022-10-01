@@ -72,28 +72,25 @@ public class DAOImplementacionFich implements DAO {
     @Override
     public Boolean createMovement(Customer cust, Movement mov) {
         Boolean created = false;
-        Set<Customer> customers = dumpFileToSet();
-        List<Movement> movements = chargeAllMovements(customers);
+        customerSet = dumpFileToSet();
+        Customer customer = checkCustomerData(cust);
+        List<Movement> movements = chargeAllMovements(customerSet);
 
-        for (Customer customer : customers) {
-            if (customer.getId().equals(cust.getId())) {
-                for (Account customerAccount : customer.getCustomerAccounts()) {
-                    if (customerAccount.getId().equals(mov.getAccount_id())) {
-                        if (movements.isEmpty()) {
-                            mov.setId((long) 1);
-                        } else {
-                            mov.setId((long) movements.get(movements.size() - 1).getId() + 1);
-                        }
-                        customerAccount.getAccountMovements().add(mov);
-                        updateBalance(customerAccount, mov);
-                        created = true;
-                    }
+        for (Account customerAccount : customer.getCustomerAccounts()) {
+            if (customerAccount.getId().equals(mov.getAccount_id())) {
+                if (movements.isEmpty()) {
+                    mov.setId((long) 1);
+                } else {
+                    mov.setId((long) movements.get(movements.size() - 1).getId() + 1);
                 }
+                customerAccount.getAccountMovements().add(mov);
+                updateBalance(customerAccount, mov);
+                created = true;
             }
         }
 
         if (created) {
-            volcarSetFichero(customers);
+            volcarSetFichero(customerSet);
         }
 
         return created;
@@ -101,19 +98,16 @@ public class DAOImplementacionFich implements DAO {
 
     @Override
     public Set<Movement> checkMovement(Account ac) {
-        Set<Customer> customers = dumpFileToSet();
+        Customer customer = checkCustomerData(cus);
         Set<Movement> movements = new HashSet<>();
 
-        for (Customer customer : customers) {
-            for (Account account : customer.getCustomerAccounts()) {
-                if (ac.getId() != null && account.getId().equals(ac.getId())) {
-                    for (Movement accountMovement : account.getAccountMovements()) {
-                        movements.add(accountMovement);
-                    }
-                    return movements;
+        for (Account account : customer.getCustomerAccounts()) {
+            if (ac.getId() != null && account.getId().equals(ac.getId())) {
+                for (Movement accountMovement : account.getAccountMovements()) {
+                    movements.add(accountMovement);
                 }
+                return movements;
             }
-
         }
 
         return null;
