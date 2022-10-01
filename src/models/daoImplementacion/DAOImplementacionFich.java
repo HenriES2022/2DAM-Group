@@ -103,16 +103,19 @@ public class DAOImplementacionFich implements DAO {
 
     @Override
     public Set<Movement> checkMovement(Account ac) {
-        Customer customer = checkCustomerData(cus);
+        customerSet = dumpFileToSet();
         Set<Movement> movements = new HashSet<>();
 
-        for (Account account : customer.getCustomerAccounts()) {
-            if (ac.getId() != null && account.getId().equals(ac.getId())) {
-                for (Movement accountMovement : account.getAccountMovements()) {
-                    movements.add(accountMovement);
+        for (Customer customer : customerSet) {
+            for (Account account : customer.getCustomerAccounts()) {
+                if (ac.getId() != null && account.getId().equals(ac.getId())) {
+                    for (Movement accountMovement : account.getAccountMovements()) {
+                        movements.add(accountMovement);
+                    }
+                    return movements;
                 }
-                return movements;
             }
+
         }
 
         return null;
@@ -121,16 +124,21 @@ public class DAOImplementacionFich implements DAO {
     @Override
     public Boolean createAccount(Account ac, Customer cus) {
         boolean created = false;
+        customerSet = dumpFileToSet();
         try {
             Customer customer = checkCustomerData(cus);
-
+            customerSet.remove(customer);
             customer.getCustomerAccounts().add(ac);
+            
+            customerSet.add(customer);
             created = true;
         } catch (DataNotFoundException ex) {
             Logger.getLogger(DAOImplementacionFich.class.getName()).log(Level.SEVERE, "No se ha encontrado al Cliente", ex);
-            return false;
+            created = false;
         }
-
+        if (created) {
+            volcarSetFichero(customerSet);
+        }
         return created;
     }
 
@@ -140,18 +148,13 @@ public class DAOImplementacionFich implements DAO {
     }
 
     @Override
-    public Boolean checkAccountData(Account ac) {
-        Set<Customer> customers = dumpFileToSet();
-        Set<Account> accounts = new HashSet();
-
-        for (Customer customer : customers) {
-            for (Account account : customer.getCustomerAccounts()) {
-                if (ac.getId() != null && account.getId().equals(ac.getId())) {
-                    accounts.add(ac);
-                }
-            }
-        }
-        return false;
+    public Account checkAccountData(Account ac) {
+        customerSet = dumpFileToSet();
+        Account account = null;
+        
+        
+        
+        return account;
     }
 
     /**

@@ -159,21 +159,29 @@ public class DAOImplementacionBD implements DAO {
     public Boolean createAccount(Account ac, Customer cus) {
         this.openConnection();
         try ( PreparedStatement stat = con.prepareStatement(CREATE_ACCOUNT)) {
-            con.setAutoCommit(false);
-
             stat.setString(1, ac.getDescription());
-            stat.setString(2, ac.getBalance().toString());
-            stat.setString(3, ac.getCreditLine().toString());
-            stat.setString(4, ac.getBeginBalance().toString());
-            stat.setString(5, ac.getBeginBalanceTimestamp().toString());
-            stat.setString(6, ac.getType().toString());
+            stat.setDouble(2, ac.getBalance());
+            stat.setDouble(3, ac.getCreditLine());
+            stat.setDouble(4, ac.getBeginBalance());
+            stat.setTimestamp(5, ac.getBeginBalanceTimestamp());
+            
+            if (ac.getType().equals(Type.STANDAR)) {
+                stat.setInt(6, Type.STANDAR.getType());
+            }
+            if (ac.getType().equals(Type.CREDIT)) {
+                stat.setInt(6, Type.CREDIT.getType());
+            }
+            
+            stat.executeUpdate();
 
         } catch (SQLException e) {
             rollback();
             System.err.println(e);
             return false;
+        }finally{
+            this.closeConnection();
         }
-        return null;
+        return true;
     }
 
     @Override
@@ -182,30 +190,43 @@ public class DAOImplementacionBD implements DAO {
     }
 
     @Override
-    public Boolean checkAccountData(Account ac) {
+    public Account checkAccountData(Account ac) throws DataNotFoundException{
         this.openConnection();
         ResultSet rs;
+        Account account = null;
         try ( PreparedStatement stat = con.prepareStatement(SEARCH_ACCOUNT_DATA)) {
             con.setAutoCommit(false);
 
             stat.setLong(1, ac.getId());
 
             rs = stat.executeQuery();
-
-            stat.setLong(1, ac.getId());
-            stat.setString(2, ac.getDescription());
-            stat.setDouble(3, ac.getBalance());
-            stat.setDouble(4, ac.getCreditLine());
-            stat.setDouble(5, ac.getBeginBalance());
-            stat.setTimestamp(6, ac.getBeginBalanceTimestamp());
-            stat.setString(7, ac.getType().toString());
+            
+            account = new Account();
+            
+            account.setId(ac.getId());
+            account.setBalance(rs.getDouble(2));
+            account.setBeginBalance(rs.getDouble(3));
+            account.setBeginBalanceTimestamp(rs.getTimestamp(4));
+            account.setCreditLine(rs.getDouble(5));
+            account.setDescription(rs.getString(6));
+            if (rs.getInt(7) == 0) {
+                account.setType(Type.valueOf("STANDAR"));
+            }
+            if (rs.getInt(7) == 1) {
+                account.setType(Type.valueOf("CREDIT"));
+            }
+            
 
         } catch (SQLException e) {
-            rollback();
             System.err.println(e);
-            return false;
+            
+        } finally{
+            this.closeConnection();
+            if (account == null) {
+                throw new DataNotFoundException("No se ha encontrado la cuenta con los datos introducidos");
+            }
         }
-        return true;
+        return account;
     }
 
     @Override
