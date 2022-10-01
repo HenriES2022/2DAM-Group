@@ -27,7 +27,7 @@ public class Controller {
     /**
      * Método para crear un cliente
      *
-     * @return 
+     * @return
      */
     public Boolean createCustomer() {
         // Pedir todos los datos del cliente
@@ -78,21 +78,12 @@ public class Controller {
      */
     public Set<Account> checkCustomerAccounts(Customer cus) {
         if (cus != null) {
-            System.out.print("¿Quieres también consultar las cuentas de este cliente? ");
-            if (!Util.esBoolean()) {
-                return null;
-            }
-        } else {
-            cus = checkCustomer();
-        }
-        if (cus != null) {
             try {
                 return dao.checkCustomerAccounts(cus);
             } catch (DataNotFoundException ex) {
                 System.err.println(ex);
             }
         }
-
         return null;
     }
 
@@ -183,18 +174,18 @@ public class Controller {
         created = dao.createMovement(cus, mov);
         if (created) {
             System.out.println("El movimiento ha sido creado con exito");
-        } else{
+        } else {
             System.out.println("Ha habido un error al crear el movimiento");
         }
     }
-    
+
     /**
-     * 
+     *
      */
     public void createAccount() {
         Account ac = new Account();
         Customer cus = new Customer();
-        
+
         ac.setId(Util.leerLong("Insertar ID: "));
         ac.setDescription(Util.introducirCadena("Insertar Descripcion: "));
         ac.setBalance(Util.leerDouble("Introducir Balance: "));
@@ -207,8 +198,8 @@ public class Controller {
 
     /**
      * Este metodo muestra la informacion sobre una cuenta en concreto
-     * 
-     * @param ac 
+     *
+     * @param ac
      */
     public void checkAccountData(Account ac) {
         int id = Util.leerInt("Insertar ID de una Cuenta");
@@ -235,7 +226,7 @@ public class Controller {
         Account ac = null;
         Set<Account> accounts = null;
         Set<Movement> movements = null;
-        
+
         cus = searchCustomerMenu();
         try {
             accounts = dao.checkCustomerAccounts(cus);
@@ -253,8 +244,8 @@ public class Controller {
         try {
             ac = searchAccount(accountIdSelected, accounts);
             movements = dao.checkMovement(ac);
-            
-            System.out.println("ID    " + "CANTIDAD    "+ "BALANCE    " + "DESCRIPCION    " + "FECHA");
+
+            System.out.println("ID    " + "CANTIDAD    " + "BALANCE    " + "DESCRIPCION    " + "FECHA");
             for (Movement mov : movements) {
                 mov.getDatos();
             }

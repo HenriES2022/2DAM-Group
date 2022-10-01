@@ -32,15 +32,17 @@ public class ViewClass {
                     cus = controller.checkCustomer();
                     if (cus != null) {
                         System.out.println(cus.toString());
-                        accCus = controller.checkCustomerAccounts(cus);
-                        if (accCus != null) {
-                            iterateSet(accCus);
+                        System.out.print("\n¿Quieres ver las cuentas del cliente?");
+                        if (Util.esBoolean()) {
+                            accCus = controller.checkCustomerAccounts(cus);
+                            if (accCus != null) {
+                                iterateSet(accCus);
+                            }
                         }
                     }
                     break;
                 case 3:
-                    accCus = controller.checkCustomerAccounts(null);
-                    iterateSet(accCus);
+                    iterateSet(controller.checkCustomerAccounts(controller.checkCustomer()));
                     break;
                 case 4:
 
