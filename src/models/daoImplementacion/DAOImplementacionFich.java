@@ -122,13 +122,17 @@ public class DAOImplementacionFich implements DAO {
     @Override
     public Boolean createAccount(Account ac, Customer cus) {
         boolean created = false;
-        Set<Account> accounts = new HashSet<>();
-        
-        for(Account account: accounts){
-            
+        try {
+            Customer customer = checkCustomerData(cus);
+
+            customer.getCustomerAccounts().add(ac);
+            created = true;
+        } catch (DataNotFoundException ex) {
+            Logger.getLogger(DAOImplementacionFich.class.getName()).log(Level.SEVERE, "No se ha encontrado al Cliente", ex);
+            return false;
         }
-        
-        return false;
+
+        return created;
     }
 
     @Override
@@ -138,38 +142,15 @@ public class DAOImplementacionFich implements DAO {
 
     @Override
     public Boolean checkAccountData(Account ac) {
-        Long id;
-        FileInputStream fis = null;
-        ObjectInputStream ois = null;
+        Set<Customer> customers = dumpFileToSet();
+        Set<Account> accounts = new HashSet();
 
-        if (fich.exists()) {
-            try {
-                fis = new FileInputStream(fich);
-                ois = new ObjectInputStream(fis);
-
-                id = Util.leerLong("Introducir id");
-                if (ac.getId().equals(id)) {
-                    System.out.println(ac.getId());
-                    System.out.println(ac.getDescription());
-                    System.out.println(ac.getBalance());
-                    System.out.println(ac.getCreditLine());
-                    System.out.println(ac.getBeginBalance());
-                    System.out.println(ac.getBeginBalanceTimestamp());
-                    System.out.println(ac.getType());
-                }
-            } catch (FileNotFoundException ex) {
-                Logger.getLogger(DAOImplementacionFich.class.getName()).log(Level.SEVERE, null, ex);
-            } catch (IOException ex) {
-                Logger.getLogger(DAOImplementacionFich.class.getName()).log(Level.SEVERE, null, ex);
-            } finally {
-                try {
-                    ois.close();
-                    fis.close();
-                } catch (IOException ex) {
-                    Logger.getLogger(DAOImplementacionFich.class.getName()).log(Level.SEVERE, null, ex);
+        for (Customer customer : customers) {
+            for (Account account : customer.getCustomerAccounts()) {
+                if (ac.getId() != null && account.getId().equals(ac.getId())) {
+                    accounts.add(ac);
                 }
             }
-            return true;
         }
         return false;
     }
