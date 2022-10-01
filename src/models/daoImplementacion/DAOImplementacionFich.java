@@ -5,7 +5,7 @@
  */
 package models.daoImplementacion;
 
-import controller.utilidades.MyObjectOutputStream;
+import controller.utilidades.DataNotFoundException;
 import controller.utilidades.Util;
 import java.io.File;
 import java.io.FileInputStream;
@@ -16,7 +16,9 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectOutputStream;
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -31,7 +33,7 @@ import models.Movement;
  */
 public class DAOImplementacionFich implements DAO {
 
-    private File fich = new File("BankFich.obj");
+    private final File fich = new File("BankFich.obj");
 
     public boolean volcarSetFichero(Set<Customer> customers) {
         FileOutputStream fos = null;
@@ -51,9 +53,13 @@ public class DAOImplementacionFich implements DAO {
                 Logger.getLogger(DAOImplementacionFich.class.getName()).log(Level.SEVERE, null, ex);
             } finally {
                 try {
-                    oos.flush();
-                    oos.close();
-                    fos.close();
+                    if (oos != null) {
+                        oos.flush();
+                        oos.close();
+                    }
+                    if (fos != null) {
+                        fos.close();
+                    }
                 } catch (IOException ex) {
                     Logger.getLogger(DAOImplementacionFich.class.getName()).log(Level.SEVERE, null, ex);
                 }
@@ -67,12 +73,17 @@ public class DAOImplementacionFich implements DAO {
     public Boolean createMovement(Customer cust, Movement mov) {
         Boolean created = false;
         Set<Customer> customers = dumpFileToSet();
-        Set<Movement> movements = new HashSet<>();
+        List<Movement> movements = chargeAllMovements(customers);
 
         for (Customer customer : customers) {
             if (customer.getId().equals(cust.getId())) {
                 for (Account customerAccount : customer.getCustomerAccounts()) {
                     if (customerAccount.getId().equals(mov.getAccount_id())) {
+                        if (movements.isEmpty()) {
+                            mov.setId((long) 1);
+                        } else {
+                            mov.setId((long) movements.get(movements.size() - 1).getId() + 1);
+                        }
                         customerAccount.getAccountMovements().add(mov);
                         updateBalance(customerAccount, mov);
                         created = true;
@@ -163,25 +174,80 @@ public class DAOImplementacionFich implements DAO {
         return false;
     }
 
+    /**
+     * Este método añadirá el nuevo cliente al fichero donde se guardarán todos
+     * los clientes registrados
+     *
+     * @param cus Se le pasa el objecto Customer con todos los datos
+     * introducidos menos el ID
+     * @return Boolean devuelve un booleano dependiendo si se ha creado
+     * correctamente
+     */
     @Override
     public Boolean createCustomer(Customer cus) {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+
+        Set<Customer> customers = dumpFileToSet();
+        Long id = 0L;
+
+        if (!customers.isEmpty()) {
+            for (Customer customer : customers) {
+                if (id < customer.getId()) {
+                    id = customer.getId();
+                }
+            }
+        }
+        cus.setId(id + 1);
+        customers.add(cus);
+
+        return volcarSetFichero(customers);
     }
 
     @Override
-    public Customer checkCustomerData(Customer cus) {
-        return null;
+    public Customer checkCustomerData(Customer cus) throws DataNotFoundException {
+
+        Set<Customer> customers = dumpFileToSet();
+
+        if (cus.getId() != null) {
+            Long id = cus.getId();
+            for (Customer customer : customers) {
+                if (customer.getId().equals(id)) {
+                    return customer;
+                }
+            }
+            throw new DataNotFoundException("No se ha encontrado el cliente con ese ID");
+        } else {
+            String firstName = cus.getFirstName();
+            String lastName = cus.getLastName();
+            for (Customer customer : customers) {
+                if (customer.getFirstName().equalsIgnoreCase(firstName)
+                        && customer.getLastName().equalsIgnoreCase(lastName)) {
+                    return customer;
+                }
+            }
+            throw new DataNotFoundException("No se ha encontrado el cliente con ese Nombre y apellido");
+        }
     }
 
     @Override
     public Set<Account> checkCustomerAccounts(Customer cus) {
+
+        try {
+            Customer customer = checkCustomerData(cus);
+            if (!customer.getCustomerAccounts().isEmpty()) {
+                return customer.getCustomerAccounts();
+            }
+
+        } catch (DataNotFoundException ex) {
+            Logger.getLogger(DAOImplementacionFich.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
         return null;
     }
 
     private Set<Customer> dumpFileToSet() {
         Set<Customer> customers = new HashSet<>();
 
-        if (fich.exists()) {
+        if (fich.exists() && Util.calculoFichero(fich) > 0) {
             Customer cus = null;
             FileInputStream fis = null;
             ObjectInputStream ois = null;
@@ -205,8 +271,12 @@ public class DAOImplementacionFich implements DAO {
                 ex.printStackTrace();
             } finally {
                 try {
-                    ois.close();
-                    fis.close();
+                    if (ois != null) {
+                        ois.close();
+                    }
+                    if (fis != null) {
+                        fis.close();
+                    }
                 } catch (IOException ex) {
                     ex.printStackTrace();
                 }
@@ -214,7 +284,7 @@ public class DAOImplementacionFich implements DAO {
             }
 
         } else {
-            System.out.println("El fichero no existe");
+            System.out.println("El fichero no existe o no tiene ningun cliente guardado");
         }
 
         return customers;
@@ -226,5 +296,19 @@ public class DAOImplementacionFich implements DAO {
         } else if (mov.getDescription().equalsIgnoreCase("Payment")) {
             customerAccount.setBalance(customerAccount.getBalance() - mov.getAmount());
         }
+    }
+
+    private List<Movement> chargeAllMovements(Set<Customer> customers) {
+        List<Movement> ret = new ArrayList<>();
+
+        for (Customer customer : customers) {
+            for (Account customerAccount : customer.getCustomerAccounts()) {
+                for (Movement accountMovement : customerAccount.getAccountMovements()) {
+                    ret.add(accountMovement);
+                }
+            }
+        }
+
+        return ret;
     }
 }
