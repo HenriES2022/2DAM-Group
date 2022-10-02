@@ -155,7 +155,33 @@ public class DAOImplementacionFich implements DAO {
 
     @Override
     public Boolean addAccountToCustomer(Customer cus, Account ac) {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+        customerSet = dumpFileToSet();
+        Boolean modified = false;
+        Customer customer = null;
+        
+        try {
+            customer = checkCustomerData(cus);
+            customerSet.remove(cus);
+            
+            for (Account customerAccount : customer.getCustomerAccounts()) {
+                if (customerAccount.getId().equals(ac.getId())) {
+                    ac = customerAccount;
+                }
+            }
+            
+            customer.getCustomerAccounts().add(ac);
+            customerSet.add(cus);
+            
+            modified = true;
+        } catch (DataNotFoundException ex) {
+            Logger.getLogger(DAOImplementacionFich.class.getName()).log(Level.SEVERE, null, ex);
+            modified = false;
+        }
+        
+        if (modified) {
+            volcarSetFichero(customerSet);
+        }
+       return modified;
     }
 
     @Override
