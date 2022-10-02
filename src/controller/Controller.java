@@ -57,15 +57,19 @@ public class Controller {
             System.out.println(customer.toString());
             System.out.print("\n¿Quieres ver las cuentas del cliente? ");
             if (Util.esBoolean()) {
-                int i = 0;
-                for (Account account : customer.getCustomerAccounts()) {
-                    i += 1;
-                    System.out.printf("---Cuenta %d---\n", i);
-                    account.getDatos();
-                    i++;
-                }
-                if (i == 0) {
-                    System.out.println("Este cliente no tiene ninguna cuenta\n");
+                try {
+                    int i = 0;
+                    for (Account account : dao.checkCustomerAccounts(customer)) {
+                        i += 1;
+                        System.out.printf("---Cuenta %d---\n", i);
+                        account.getDatos();
+                        i++;
+                    }
+                    if (i == 0) {
+                        System.out.println("Este cliente no tiene ninguna cuenta\n");
+                    }
+                } catch (DataNotFoundException ex) {
+                    Logger.getLogger(Controller.class.getName()).log(Level.SEVERE, null, ex);
                 }
             }
         }
@@ -104,14 +108,19 @@ public class Controller {
      */
     public void checkCustomerAccounts() {
         int i = 0;
-        for (Account account : getCustomer().getCustomerAccounts()) {
-            i += 1;
-            System.out.printf("---Cuenta %d---\n", i);
-            account.getDatos();
-        }
-        if (i == 0) {
-            System.out.println("Este cliente no tiene ninguna cuenta");
 
+        try {
+            for (Account account : dao.checkCustomerAccounts(getCustomer())) {
+                i += 1;
+                System.out.printf("---Cuenta %d---\n", i);
+                account.getDatos();
+            }
+            if (i == 0) {
+                System.out.println("Este cliente no tiene ninguna cuenta");
+
+            }
+        } catch (DataNotFoundException ex) {
+            Logger.getLogger(Controller.class.getName()).log(Level.SEVERE, null, ex);
         }
 
     }
@@ -124,6 +133,7 @@ public class Controller {
      *
      */
     private Customer searchCustomerMenu() {
+        Boolean ok = false;
         // Pedir la ID del cliente
         Customer cus = new Customer();
         Integer opc = Util.leerInt("-----Buscar cliente-----\n"
@@ -136,9 +146,20 @@ public class Controller {
                 cus.setId(Util.leerLong("Introduzca el ID del cliente: "));
                 return cus;
             case 2:
-                String nombreApellido = Util.introducirCadena("Introduzca el nombre y apellido del cliente: ");
-                cus.setFirstName(nombreApellido.split("\\s+")[0]);
-                cus.setLastName(nombreApellido.split("\\s+")[1]);
+                String nombre;
+                String apellido;
+                do {
+                    nombre = Util.introducirCadena("Introduzca el nombre del cliente: ");
+                    apellido = Util.introducirCadena("Introduzca el apellido del cliente: ");
+                    if ((!nombre.isEmpty() && !apellido.isEmpty()) && (!nombre.contains(" ") && !apellido.contains(" "))) {
+                        cus.setFirstName(nombre);
+                        cus.setLastName(apellido);
+                        ok = true;
+                    } else {
+                        System.out.println("Debe de introducir un nombre y apellido válido");
+                        ok = false;
+                    }
+                } while (!ok);
                 return cus;
             case 3:
                 System.out.println("Volviendo al menú principal...");
@@ -161,7 +182,7 @@ public class Controller {
         Set<Account> accounts = null;
         Customer cus = new Customer();
 
-        cus = searchCustomerMenu();
+        cus = getCustomer();
         try {
             accounts = dao.checkCustomerAccounts(cus);
 
@@ -254,7 +275,7 @@ public class Controller {
         Set<Account> accounts = null;
         Set<Movement> movements = null;
 
-        cus = searchCustomerMenu();
+        cus = getCustomer();
         try {
             accounts = dao.checkCustomerAccounts(cus);
             if (accounts != null) {
@@ -277,7 +298,7 @@ public class Controller {
                 } catch (NullPointerException e) {
                     System.out.println("No se ha encontrado una cuenta con el id introducido");
                 } catch (DataNotFoundException ex) {
-                    Logger.getLogger(Controller.class.getName()).log(Level.SEVERE, null, ex);
+                    System.err.println(ex);
                 }
             }
         } catch (DataNotFoundException | NullPointerException ex) {
@@ -325,13 +346,15 @@ public class Controller {
         System.out.println("¿A que cliente quieres añadir la cuenta?");
         Customer cus = getCustomer();
 
-        Account acc = new Account();
-        acc.setId(Util.leerLong("Inserta ID de la cuenta que quieres añadir al cliente:"));
+        if (cus != null) {
+            Account acc = new Account();
+            acc.setId(Util.leerLong("Inserta ID de la cuenta que quieres añadir al cliente:"));
 
-        if (dao.addAccountToCustomer(cus, acc)) {
-            System.out.println("Se ha añadido la cuenta al cliente correctamente");
-        } else {
-            System.out.println("Error. No se ha podido añadir la cuenta al cliente");
+            if (dao.addAccountToCustomer(cus, acc)) {
+                System.out.println("Se ha añadido la cuenta al cliente correctamente");
+            } else {
+                System.out.println("Error. No se ha podido añadir la cuenta al cliente");
+            }
         }
 
     }
