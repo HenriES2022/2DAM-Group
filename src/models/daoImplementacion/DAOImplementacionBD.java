@@ -44,6 +44,7 @@ public class DAOImplementacionBD implements DAO {
             + "(description,balance,creditLine,beginBalance,beginBalanceTimestamp,type)"
             + "values(?,?,?,?,?,?)";
     private final String SEARCH_ACCOUNT_DATA = "SELECT * FROM ACCOUNT WHERE id = ?";
+    private final String ADD_CUSTOMER_ACCOUNT = "INSERT INTO CUSTOMER_ACCOUNT values(?,?)";
 
     // Movement
     private final String SEARCH_MOVEMENTS = "SELECT * FROM MOVEMENT WHERE acount_id = ?";
@@ -186,7 +187,22 @@ public class DAOImplementacionBD implements DAO {
 
     @Override
     public Boolean addAccountToCustomer(Customer cus, Account ac) {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+        this.openConnection();
+        try ( PreparedStatement stat = con.prepareStatement(ADD_CUSTOMER_ACCOUNT)) {
+
+            stat.setLong(1, cus.getId());
+            stat.setLong(2, ac.getId());
+
+            stat.executeUpdate();
+
+        } catch (SQLException e) {
+            rollback();
+            System.err.println(e);
+            return false;
+        } finally {
+            this.closeConnection();
+        }
+        return true;
     }
 
     @Override
@@ -201,19 +217,20 @@ public class DAOImplementacionBD implements DAO {
 
             rs = stat.executeQuery();
 
-            account = new Account();
-
-            account.setId(ac.getId());
-            account.setBalance(rs.getDouble(2));
-            account.setBeginBalance(rs.getDouble(3));
-            account.setBeginBalanceTimestamp(rs.getTimestamp(4));
-            account.setCreditLine(rs.getDouble(5));
-            account.setDescription(rs.getString(6));
-            if (rs.getInt(7) == 0) {
-                account.setType(Type.valueOf("STANDAR"));
-            }
-            if (rs.getInt(7) == 1) {
-                account.setType(Type.valueOf("CREDIT"));
+            if (rs.next()) {
+                account = new Account();
+                account.setId(ac.getId());
+                account.setBalance(rs.getDouble(2));
+                account.setBeginBalance(rs.getDouble(3));
+                account.setBeginBalanceTimestamp(rs.getTimestamp(4));
+                account.setCreditLine(rs.getDouble(5));
+                account.setDescription(rs.getString(6));
+                if (rs.getInt(7) == 0) {
+                    account.setType(Type.valueOf("STANDAR"));
+                }
+                if (rs.getInt(7) == 1) {
+                    account.setType(Type.valueOf("CREDIT"));
+                }
             }
 
         } catch (SQLException e) {

@@ -8,7 +8,6 @@ import controller.utilidades.DataNotFoundException;
 import controller.utilidades.Util;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
-import java.util.Iterator;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -212,22 +211,28 @@ public class Controller {
      *
      */
     public void createAccount() {
+        System.out.println("¿A que cliente quieres crear la cuenta?");
         Customer cus = getCustomer();
 
         if (cus != null) {
             Account ac = new Account();
             ac.setDescription(Util.introducirCadena("Insertar Descripcion: "));
-            ac.setBeginBalance(Util.leerDouble("Introducir Balance Actual: "));
+            ac.setBeginBalance(Util.leerDouble("Introducir Balance Inicial: "));
             ac.setBalance(ac.getBeginBalance());
             ac.setCreditLine(Util.leerDouble("Introducir Linea de Credito: "));
             ac.setBeginBalanceTimestamp(Timestamp.valueOf(LocalDateTime.now()));
-            if (Util.leerInt("¿Que tipo de cuenta es:? \n\t1.Estandar \n\t2.Credito", 0, 3) != 0) {
+            if (Util.leerInt("¿Que tipo de cuenta es:? \n\t1.Estandar \n\t2.Credito", 1, 2) == 1) {
                 ac.setType(Type.STANDAR);
             } else {
                 ac.setType(Type.CREDIT);
             }
 
-            dao.createAccount(ac, cus);
+            if (dao.createAccount(ac, cus)) {
+                System.out.println("Se ha creado la cuenta al cliente correctamente");
+            } else {
+                System.out.println("Error. No se ha podido crear la cuenta al cliente");
+            }
+
         }
     }
 
@@ -239,7 +244,7 @@ public class Controller {
         try {
             Account acc = new Account();
             acc.setId(Util.leerLong("Inserta ID de una Cuenta:"));
-            dao.checkAccountData(acc);
+            dao.checkAccountData(acc).getDatos();
         } catch (DataNotFoundException ex) {
             Logger.getLogger(Controller.class.getName()).log(Level.SEVERE, "La cuenta con la ID insertada no se existe", ex);
         }
@@ -319,14 +324,18 @@ public class Controller {
     }
 
     public void addAccountToCustomer() {
-        System.out.println("¿A que cliente quiere añadir la cuenta?");
+        System.out.println("¿A que cliente quieres añadir la cuenta?");
         Customer cus = getCustomer();
 
         System.out.println("Inserte la ID de la cuenta que quieres añadir al cliente");
         Account acc = new Account();
         acc.setId(Util.leerLong("Inserta ID de una Cuenta:"));
 
-        dao.addAccountToCustomer(cus, acc);
+        if (dao.addAccountToCustomer(cus, acc)) {
+            System.out.println("Se ha añadido la cuenta al cliente correctamente");
+        } else {
+            System.out.println("Error. No se ha podido añadir la cuenta al cliente");
+        }
 
     }
 
