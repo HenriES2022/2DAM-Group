@@ -120,7 +120,7 @@ public class DAOImplementacionBD implements DAO {
         ResultSet rs;
 
         // Try catch con recursos
-        try (PreparedStatement stat = con.prepareStatement(SEARCH_MOVEMENTS)) {
+        try ( PreparedStatement stat = con.prepareStatement(SEARCH_MOVEMENTS)) {
 
             stat.setLong(1, mov.getAccount_id());
 
@@ -154,7 +154,7 @@ public class DAOImplementacionBD implements DAO {
     @Override
     public Boolean createAccount(Account ac, Customer cus) {
         this.openConnection();
-        try (PreparedStatement stat = con.prepareStatement(CREATE_ACCOUNT)) {
+        try ( PreparedStatement stat = con.prepareStatement(CREATE_ACCOUNT)) {
             stat.setString(1, ac.getDescription());
             stat.setDouble(2, ac.getBalance());
             stat.setDouble(3, ac.getCreditLine());
@@ -205,7 +205,7 @@ public class DAOImplementacionBD implements DAO {
         this.openConnection();
         ResultSet rs;
         Account account = null;
-        try (PreparedStatement stat = con.prepareStatement(SEARCH_ACCOUNT_DATA)) {
+        try ( PreparedStatement stat = con.prepareStatement(SEARCH_ACCOUNT_DATA)) {
             con.setAutoCommit(false);
 
             stat.setLong(1, ac.getId());
@@ -245,7 +245,7 @@ public class DAOImplementacionBD implements DAO {
         this.openConnection();
 
         // Try catch con recursos
-        try (PreparedStatement stat = con.prepareStatement(CREATE_CUSTOMER)) {
+        try ( PreparedStatement stat = con.prepareStatement(CREATE_CUSTOMER)) {
 
             stat.setString(1, cus.getFirstName());
             stat.setString(2, cus.getLastName());
@@ -276,7 +276,7 @@ public class DAOImplementacionBD implements DAO {
         ResultSet rs;
 
         // Try catch con recursos
-        try (PreparedStatement stat = (cus.getId() >= 0L
+        try ( PreparedStatement stat = (cus.getId() >= 0L
                 ? con.prepareStatement(SEARCH_CUSTOMER_ID)
                 : con.prepareStatement(SEARCH_CUSTOMER_NAME))) {
 
@@ -322,7 +322,7 @@ public class DAOImplementacionBD implements DAO {
         ResultSet rs;
 
         // Try catch con recursos
-        try (PreparedStatement stat = con.prepareStatement(SEARCH_ACCOUNT_CUSTOMER)) {
+        try ( PreparedStatement stat = con.prepareStatement(SEARCH_ACCOUNT_CUSTOMER)) {
 
             stat.setLong(1, cus.getId());
 
