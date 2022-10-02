@@ -164,39 +164,39 @@ public class Controller {
         cus = searchCustomerMenu();
         try {
             accounts = dao.checkCustomerAccounts(cus);
-        } catch (DataNotFoundException ex) {
+
+            //Cabeceras de la informacion de las cuentas
+            System.out.println("---CUENTAS---");
+            System.out.println("ID    DESCRIPCION    BALANCE    LINEA_CREDITO    SALDO_INICIAL    FECHA_SALDO_INICIAL    TIPO");
+
+            showAccounts(accounts);
+            accountIdSelected = Util.leerLong("Introduce el id de la cuenta en la que quiere crear un movimiento");
+
+            ac = searchAccount(accountIdSelected, accounts);
+
+            mov = new Movement();
+            mov.setAccount_id(accountIdSelected);
+
+            if (Util.leerInt("Que tipo de movimiento quiere (1.Deposito/2.Pago)", 1, 2) == 1) {
+                mov.setDescription("Deposit");
+            } else {
+                mov.setDescription("Payment");
+            }
+
+            mov.setBalance(ac.getBalance());
+
+            movementAmount = Util.leerDouble("Introduce la cantidad del movimiento");
+            mov.setAmount(movementAmount);
+
+            mov.setDate(Timestamp.valueOf(LocalDateTime.now()));
+            created = dao.createMovement(cus, mov);
+            if (created) {
+                System.out.println("El movimiento ha sido creado con exito");
+            } else {
+                System.out.println("Ha habido un error al crear el movimiento");
+            }
+        } catch (DataNotFoundException | NullPointerException ex) {
             System.err.println(ex);
-        }
-
-        //Cabeceras de la informacion de las cuentas
-        System.out.println("---CUENTAS---");
-        System.out.println("ID    DESCRIPCION    BALANCE    LINEA_CREDITO    SALDO_INICIAL    FECHA_SALDO_INICIAL    TIPO");
-
-        showAccounts(accounts);
-        accountIdSelected = Util.leerLong("Introduce el id de la cuenta en la que quiere crear un movimiento");
-
-        ac = searchAccount(accountIdSelected, accounts);
-
-        mov = new Movement();
-        mov.setAccount_id(accountIdSelected);
-
-        if (Util.leerInt("Que tipo de movimiento quiere (1.Deposito/2.Pago)", 1, 2) == 1) {
-            mov.setDescription("Deposit");
-        } else {
-            mov.setDescription("Payment");
-        }
-
-        mov.setBalance(ac.getBalance());
-
-        movementAmount = Util.leerDouble("Introduce la cantidad del movimiento");
-        mov.setAmount(movementAmount);
-
-        mov.setDate(Timestamp.valueOf(LocalDateTime.now()));
-        created = dao.createMovement(cus, mov);
-        if (created) {
-            System.out.println("El movimiento ha sido creado con exito");
-        } else {
-            System.out.println("Ha habido un error al crear el movimiento");
         }
     }
 
@@ -257,29 +257,30 @@ public class Controller {
         cus = searchCustomerMenu();
         try {
             accounts = dao.checkCustomerAccounts(cus);
+            if (accounts != null) {
 
-            //Cabeceras de la informacion de las cuentas
-            System.out.println("---CUENTAS---");
-            System.out.println("ID    DESCRIPCION    BALANCE    LINEA_CREDITO    SALDO_INICIAL    FECHA_SALDO_INICIAL    TIPO");
+                //Cabeceras de la informacion de las cuentas
+                System.out.println("---CUENTAS---");
+                System.out.println("ID    DESCRIPCION    BALANCE    LINEA_CREDITO    SALDO_INICIAL    FECHA_SALDO_INICIAL    TIPO");
 
-            showAccounts(accounts);
+                showAccounts(accounts);
 
-            accountIdSelected = Util.leerLong("Introduce el id de la cuenta de la que quiere ver los movimientos");
-            try {
-                ac = searchAccount(accountIdSelected, accounts);
-                movements = dao.checkMovement(ac);
+                accountIdSelected = Util.leerLong("Introduce el id de la cuenta de la que quiere ver los movimientos");
+                try {
+                    ac = searchAccount(accountIdSelected, accounts);
+                    movements = dao.checkMovement(ac);
 
-                System.out.println("ID    " + "CANTIDAD    " + "BALANCE    " + "DESCRIPCION    " + "FECHA");
-                for (Movement mov : movements) {
-                    mov.getDatos();
+                    System.out.println("ID    " + "CANTIDAD    " + "BALANCE    " + "DESCRIPCION    " + "FECHA");
+                    for (Movement mov : movements) {
+                        mov.getDatos();
+                    }
+                } catch (NullPointerException e) {
+                    System.out.println("No se ha encontrado una cuenta con el id introducido");
+                } catch (DataNotFoundException ex) {
+                    Logger.getLogger(Controller.class.getName()).log(Level.SEVERE, null, ex);
                 }
-            } catch (NullPointerException e) {
-                System.out.println("No se ha encontrado una cuenta con el id introducido");
-            } catch (DataNotFoundException ex) {
-                Logger.getLogger(Controller.class.getName()).log(Level.SEVERE, null, ex);
             }
-
-        } catch (DataNotFoundException ex) {
+        } catch (DataNotFoundException | NullPointerException ex) {
             Logger.getLogger(Controller.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
