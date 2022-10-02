@@ -123,7 +123,6 @@ public class DAOImplementacionFich implements DAO {
             }
 
         }
-
         return null;
     }
 
@@ -185,7 +184,7 @@ public class DAOImplementacionFich implements DAO {
                 customerSet.add(cus);
                 volcarSetFichero(customerSet);
             } else {
-
+                return false;
             }
         } catch (DataNotFoundException ex) {
             Logger.getLogger(DAOImplementacionFich.class.getName()).log(Level.SEVERE, null, ex);

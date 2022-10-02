@@ -215,7 +215,6 @@ public class DAOImplementacionBD implements DAO {
             stat.executeUpdate();
 
         } catch (SQLException e) {
-            rollback();
             System.err.println(e);
             return false;
         } finally {

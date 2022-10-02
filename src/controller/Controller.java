@@ -175,7 +175,6 @@ public class Controller {
      * determinada
      */
     public void createMovement() {
-        Long idCustomer;
         Long accountIdSelected;
         Boolean created = false;
         Boolean correctAccountId = false;
@@ -198,6 +197,7 @@ public class Controller {
             for (Account account : accounts) {
                 if (account.getId().equals(accountIdSelected)) {
                     correctAccountId = true;
+
                 }
             }
             if (correctAccountId) {
@@ -223,12 +223,12 @@ public class Controller {
                 } else {
                     System.out.println("Ha habido un error al crear el movimiento");
                 }
-            } else{
+            } else {
                 System.out.println("No existe ninguna cuenta con ese id");
             }
 
         } catch (DataNotFoundException | NullPointerException ex) {
-            System.err.println(ex);
+            System.out.println("Volviendo al menú principal");
         }
     }
 
