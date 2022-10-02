@@ -13,6 +13,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.regex.Pattern;
 import models.Account;
 import models.Customer;
 import models.DAO;
@@ -31,6 +32,7 @@ public class Controller {
      * Este método pide los datos de un cliente para crearlo
      */
     public void createCustomer() {
+        String email;
         // Pedir todos los datos del cliente
         Customer customer = new Customer();
         customer.setFirstName(Util.introducirCadena("Introduzca el 1º nombre: "));
@@ -41,7 +43,14 @@ public class Controller {
         customer.setState(Util.introducirCadena("Introduzca la region: "));
         customer.setPhone(Util.leerLong("Introduzca el número de teléfono: "));
         customer.setZip(Util.leerInt("Introduzca el número Zip: "));
-        customer.setEmail(Util.introducirCadena("Introduzca el email: "));
+        do {
+            email = Util.introducirCadena("Introduzca el email: ");
+            if (emailValidator(email) != true) {
+                System.out.println("Error. Introduzca un email válido");
+            }
+        } while (emailValidator(email) != true);
+        customer.setEmail(email);
+
         // Crear cliente
         System.out.println(dao.createCustomer(customer) == true
                 ? "Se ha creado correctamente" : "Error. No se ha podido crear el cliente.");
@@ -368,6 +377,13 @@ public class Controller {
             }
         }
 
+    }
+
+    public static boolean emailValidator(String emailAddress) {
+        return Pattern.compile("^(?=.{1,64}@)[A-Za-z0-9_-]+(\\.[A-Za-z0-9_-]+)*@"
+                + "[^-][A-Za-z0-9-]+(\\.[A-Za-z0-9-]+)*(\\.[A-Za-z]{2,})$")
+                .matcher(emailAddress)
+                .matches();
     }
 
 }
