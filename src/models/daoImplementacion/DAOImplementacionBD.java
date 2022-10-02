@@ -47,8 +47,9 @@ public class DAOImplementacionBD implements DAO {
     private final String ADD_CUSTOMER_ACCOUNT = "INSERT INTO CUSTOMER_ACCOUNT values(?,?)";
 
     // Movement
-    private final String SEARCH_MOVEMENTS = "SELECT * FROM MOVEMENT WHERE acount_id = ?";
-    private final String CREATE_MOVEMENT = "INSERT INTO movement(amount, balance, description, date, account_id) VALUES(?,?,?,?,?)";
+    private final String SEARCH_MOVEMENTS = "SELECT * FROM MOVEMENT WHERE account_id = ?";
+    private final String CREATE_MOVEMENT = "INSERT INTO movement(amount, balance, description, timestamp, account_id) VALUES(?,?,?,?,?)";
+    private final String UPDATE_BALANCE = "UPDATE account set balance = ? where id = ?";
 
     // Config
     private final String URL = ResourceBundle.getBundle("controller.config").getString("url");
@@ -66,6 +67,7 @@ public class DAOImplementacionBD implements DAO {
         }
 
     }
+
     //Metodo para cerrar la conexion con la base de datos
     private void closeConnection() {
         try {
@@ -89,20 +91,27 @@ public class DAOImplementacionBD implements DAO {
     public Boolean createMovement(Customer cust, Movement mov) {
         Boolean created = false;
         this.openConnection();
-        PreparedStatement stat = null;
 
-        try {
-            stat = con.prepareStatement(CREATE_MOVEMENT);
+        try ( PreparedStatement statCreate = con.prepareStatement(CREATE_MOVEMENT);  PreparedStatement statUpdate = con.prepareStatement(UPDATE_BALANCE);) {
+            con.setAutoCommit(false);
 
-            stat.setDouble(1, mov.getAmount());
-            stat.setDouble(2, mov.getBalance());
-            stat.setString(3, mov.getDescription());
-            stat.setTimestamp(4, mov.getDate());
-            stat.setLong(5, mov.getAccount_id());
+            statCreate.setDouble(1, mov.getAmount());
+            statCreate.setDouble(2, mov.getBalance());
+            statCreate.setString(3, mov.getDescription());
+            statCreate.setTimestamp(4, mov.getDate());
+            statCreate.setLong(5, mov.getAccount_id());
+            statCreate.executeUpdate();
 
-            if (stat.executeUpdate() > 0) {
-                created = true;
+            if (mov.getDescription().equalsIgnoreCase("Deposit")) {
+                statUpdate.setDouble(1, mov.getBalance() + mov.getAmount());
+            } else if (mov.getDescription().equalsIgnoreCase("Payment")) {
+                statUpdate.setDouble(1, mov.getBalance() - mov.getAmount());
             }
+            statUpdate.setLong(2, mov.getAccount_id());
+            statUpdate.executeUpdate();
+            con.commit();
+            con.setAutoCommit(true);
+            created = true;
 
         } catch (SQLException e) {
             created = false;
@@ -123,7 +132,7 @@ public class DAOImplementacionBD implements DAO {
         // Try catch con recursos
         try ( PreparedStatement stat = con.prepareStatement(SEARCH_MOVEMENTS)) {
 
-            stat.setLong(1, mov.getAccount_id());
+            stat.setLong(1, ac.getId());
 
             rs = stat.executeQuery();
 
@@ -145,7 +154,7 @@ public class DAOImplementacionBD implements DAO {
         } finally {
             this.closeConnection();
             if (mov == null) {
-                throw new DataNotFoundException("No se ha encontrado al cliente con los datos introducidos.");
+                throw new DataNotFoundException("No se ha encontrado movimientos en esta cuenta.");
             }
         }
 
@@ -155,7 +164,11 @@ public class DAOImplementacionBD implements DAO {
     @Override
     public Boolean createAccount(Account ac, Customer cus) {
         this.openConnection();
-        try ( PreparedStatement stat = con.prepareStatement(CREATE_ACCOUNT)) {
+        ResultSet rs;
+
+        try ( PreparedStatement stat = con.prepareStatement(CREATE_ACCOUNT, PreparedStatement.RETURN_GENERATED_KEYS);  PreparedStatement statCusAcc = con.prepareStatement(ADD_CUSTOMER_ACCOUNT)) {
+            con.setAutoCommit(false);
+
             stat.setString(1, ac.getDescription());
             stat.setDouble(2, ac.getBalance());
             stat.setDouble(3, ac.getCreditLine());
@@ -168,8 +181,18 @@ public class DAOImplementacionBD implements DAO {
             if (ac.getType().equals(Type.CREDIT)) {
                 stat.setInt(6, Type.CREDIT.getType());
             }
-
             stat.executeUpdate();
+            rs = stat.getGeneratedKeys();
+
+            if (rs.next()) {
+                statCusAcc.setLong(1, cus.getId());
+                statCusAcc.setLong(2, rs.getLong(1));
+                statCusAcc.executeUpdate();
+                con.commit();
+                con.setAutoCommit(true);
+            } else {
+                return false;
+            }
 
         } catch (SQLException e) {
             rollback();
@@ -277,7 +300,7 @@ public class DAOImplementacionBD implements DAO {
         ResultSet rs;
 
         // Try catch con recursos
-        try ( PreparedStatement stat = (cus.getId() >= 0L
+        try ( PreparedStatement stat = (cus.getId() != null
                 ? con.prepareStatement(SEARCH_CUSTOMER_ID)
                 : con.prepareStatement(SEARCH_CUSTOMER_NAME))) {
 

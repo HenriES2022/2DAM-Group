@@ -35,9 +35,12 @@ public class DAOImplementacionFich implements DAO {
     private static Set<Customer> customerSet = null;
 
     /**
-     * Este metodo obtiene los datos de una coleccion set y los vuelca a al fichero
+     * Este metodo obtiene los datos de una coleccion set y los vuelca a al
+     * fichero
+     *
      * @param customers La coleccion de clientes que se quiere volcar
-     * @return Devuelve un true si se ha hecho el volcado correctamente , false si ha habido algun error
+     * @return Devuelve un true si se ha hecho el volcado correctamente , false
+     * si ha habido algun error
      */
     private boolean volcarSetFichero(Set<Customer> customers) {
         FileOutputStream fos = null;
@@ -167,28 +170,28 @@ public class DAOImplementacionFich implements DAO {
 
         try {
             customer = checkCustomerData(cus);
-            customerSet.remove(cus);
 
             for (Customer cusSet : customerSet) {
                 for (Account customerAccount : cusSet.getCustomerAccounts()) {
                     if (customerAccount.getId().equals(ac.getId())) {
                         ac = customerAccount;
+                        modified = true;
                     }
                 }
             }
+            if (modified) {
+                customerSet.remove(cus);
+                customer.getCustomerAccounts().add(ac);
+                customerSet.add(cus);
+                volcarSetFichero(customerSet);
+            } else {
 
-            customer.getCustomerAccounts().add(ac);
-            customerSet.add(cus);
-
-            modified = true;
+            }
         } catch (DataNotFoundException ex) {
             Logger.getLogger(DAOImplementacionFich.class.getName()).log(Level.SEVERE, null, ex);
             modified = false;
         }
 
-        if (modified) {
-            volcarSetFichero(customerSet);
-        }
         return modified;
     }
 
@@ -279,6 +282,7 @@ public class DAOImplementacionFich implements DAO {
 
     /**
      * Este metodo vuelca el fichero a una coleccion tipo Set
+     *
      * @return Devielve un set con los datos del fichero
      */
     private Set<Customer> dumpFileToSet() {
@@ -328,9 +332,12 @@ public class DAOImplementacionFich implements DAO {
     }
 
     /**
-     * Este metodo actualiza el balance cuando se crea un movimiento en esa cuenta
+     * Este metodo actualiza el balance cuando se crea un movimiento en esa
+     * cuenta
+     *
      * @param customerAccount La cuenta que se va a actualizar
-     * @param mov El movimiento con la informacion de tipo de movimiento y cantidad
+     * @param mov El movimiento con la informacion de tipo de movimiento y
+     * cantidad
      */
     private void updateBalance(Account customerAccount, Movement mov) {
         if (mov.getDescription().equalsIgnoreCase("Deposit")) {
@@ -341,7 +348,9 @@ public class DAOImplementacionFich implements DAO {
     }
 
     /**
-     * Un metodo que carga una lista con todos los movimientos de todas las cuentas
+     * Un metodo que carga una lista con todos los movimientos de todas las
+     * cuentas
+     *
      * @param customers La lista de clientes de las que se obtendran las cuentas
      * @return Devuelve una lista con los movimientos de todas las cuentas
      */
