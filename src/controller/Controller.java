@@ -8,6 +8,8 @@ import controller.utilidades.DataNotFoundException;
 import controller.utilidades.Util;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -176,6 +178,7 @@ public class Controller {
         Long idCustomer;
         Long accountIdSelected;
         Boolean created = false;
+        Boolean correctAccountId = false;
         Double movementAmount;
         Movement mov = null;
         Account ac = null;
@@ -192,30 +195,38 @@ public class Controller {
 
             showAccounts(accounts);
             accountIdSelected = Util.leerLong("Introduce el id de la cuenta en la que quiere crear un movimiento");
+            for (Account account : accounts) {
+                if (account.getId().equals(accountIdSelected)) {
+                    correctAccountId = true;
+                }
+            }
+            if (correctAccountId) {
+                ac = searchAccount(accountIdSelected, accounts);
+                mov = new Movement();
+                mov.setAccount_id(accountIdSelected);
 
-            ac = searchAccount(accountIdSelected, accounts);
+                if (Util.leerInt("Que tipo de movimiento quiere (1.Deposito/2.Pago)", 1, 2) == 1) {
+                    mov.setDescription("Deposit");
+                } else {
+                    mov.setDescription("Payment");
+                }
 
-            mov = new Movement();
-            mov.setAccount_id(accountIdSelected);
+                mov.setBalance(ac.getBalance());
 
-            if (Util.leerInt("Que tipo de movimiento quiere (1.Deposito/2.Pago)", 1, 2) == 1) {
-                mov.setDescription("Deposit");
-            } else {
-                mov.setDescription("Payment");
+                movementAmount = Util.leerDouble("Introduce la cantidad del movimiento");
+                mov.setAmount(movementAmount);
+
+                mov.setDate(Timestamp.valueOf(LocalDateTime.now()));
+                created = dao.createMovement(cus, mov);
+                if (created) {
+                    System.out.println("El movimiento ha sido creado con exito");
+                } else {
+                    System.out.println("Ha habido un error al crear el movimiento");
+                }
+            } else{
+                System.out.println("No existe ninguna cuenta con ese id");
             }
 
-            mov.setBalance(ac.getBalance());
-
-            movementAmount = Util.leerDouble("Introduce la cantidad del movimiento");
-            mov.setAmount(movementAmount);
-
-            mov.setDate(Timestamp.valueOf(LocalDateTime.now()));
-            created = dao.createMovement(cus, mov);
-            if (created) {
-                System.out.println("El movimiento ha sido creado con exito");
-            } else {
-                System.out.println("Ha habido un error al crear el movimiento");
-            }
         } catch (DataNotFoundException | NullPointerException ex) {
             System.err.println(ex);
         }
