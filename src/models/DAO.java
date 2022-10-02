@@ -49,7 +49,7 @@ public interface DAO {
      * Este metodo muestra la informacion sobre una cuenta
      * @param ac Esta es la cuenta de la que queremos ver la informacion
      * @return Devuelve una coleccion con los datos de la cuenta
-     * @throws DataNotFoundException 
+     * @throws DataNotFoundException En caso de que no se haya encontrado la Cuenta
      */
     public Account checkAccountData(Account ac) throws DataNotFoundException;
     
@@ -64,7 +64,7 @@ public interface DAO {
      * Este metodo muestra la informacion de un Cliente
      * @param cus Es el cliente del cual se va a mostrar la informacion
      * @return Devuelve una coleccion con los datos del Cliente
-     * @throws DataNotFoundException 
+     * @throws DataNotFoundException En caso de que no se haya encontrado al Cliente
      */
     public Customer checkCustomerData(Customer cus) throws DataNotFoundException;
 
@@ -72,7 +72,7 @@ public interface DAO {
      * Este metodo muestra las cuentas que posee un Cliente
      * @param cus Es el cliente del que se quiere ver las cuentas
      * @return Devuelve una coleccion con las cuentas del Cliente
-     * @throws DataNotFoundException 
+     * @throws DataNotFoundException En caso de que no se haya encontrado al Cliente
      */
     public Set<Account> checkCustomerAccounts(Customer cus) throws DataNotFoundException;
 }
