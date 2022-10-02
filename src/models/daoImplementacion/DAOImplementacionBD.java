@@ -56,6 +56,7 @@ public class DAOImplementacionBD implements DAO {
     private final String PASS = ResourceBundle.getBundle("controller.config").getString("pass");
     private static Connection con = null;
 
+    //Metodo para abrir la conexion con la base de datos
     private void openConnection() {
         try {
             // Establecemos conexión a la base de datos
@@ -65,7 +66,7 @@ public class DAOImplementacionBD implements DAO {
         }
 
     }
-
+    //Metodo para cerrar la conexion con la base de datos
     private void closeConnection() {
         try {
             con.close();
