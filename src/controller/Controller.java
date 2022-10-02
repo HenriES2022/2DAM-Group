@@ -108,7 +108,6 @@ public class Controller {
             i += 1;
             System.out.printf("---Cuenta %d---\n", i);
             account.getDatos();
-            i++;
         }
         if (i == 0) {
             System.out.println("Este cliente no tiene ninguna cuenta");
@@ -157,7 +156,6 @@ public class Controller {
         Long accountIdSelected;
         Boolean created = false;
         Double movementAmount;
-        String movementType = null;
         Movement mov = null;
         Account ac = null;
         Set<Account> accounts = null;
@@ -182,17 +180,11 @@ public class Controller {
         mov = new Movement();
         mov.setAccount_id(accountIdSelected);
 
-        //Este bucle comprueba que en el caso de que la opcion seleccionada no sea correcta o que se ha introducido mal siga pidiendole al usuario que vuelva a introducir una opcion
-        do {
-            movementType = Util.introducirCadena("Que tipo de movimiento quiere(Deposito/pago)");
-            if (movementType.equalsIgnoreCase("Deposito")) {
-                mov.setDescription("Deposit");
-            } else if (movementType.equalsIgnoreCase("Pago")) {
-                mov.setDescription("Payment");
-            } else {
-                movementType = null;
-            }
-        } while (movementType == null || movementType.isEmpty());
+        if (Util.leerInt("Que tipo de movimiento quiere (1.Deposito/2.Pago)", 1, 2) == 1) {
+            mov.setDescription("Deposit");
+        } else {
+            mov.setDescription("Payment");
+        }
 
         mov.setBalance(ac.getBalance());
 
@@ -223,7 +215,7 @@ public class Controller {
             ac.setBalance(ac.getBeginBalance());
             ac.setCreditLine(Util.leerDouble("Introducir Linea de Credito: "));
             ac.setBeginBalanceTimestamp(Timestamp.valueOf(LocalDateTime.now()));
-            if (Util.leerInt("¿Que tipo de cuenta es:? \n\t1.Estandar \n\t2.Credito", 1, 2) == 1) {
+            if (Util.leerInt("¿Que tipo de cuenta es? \n\t1.Estandar \n\t2.Credito", 1, 2) == 1) {
                 ac.setType(Type.STANDAR);
             } else {
                 ac.setType(Type.CREDIT);
@@ -332,9 +324,8 @@ public class Controller {
         System.out.println("¿A que cliente quieres añadir la cuenta?");
         Customer cus = getCustomer();
 
-        System.out.println("Inserte la ID de la cuenta que quieres añadir al cliente");
         Account acc = new Account();
-        acc.setId(Util.leerLong("Inserta ID de una Cuenta:"));
+        acc.setId(Util.leerLong("Inserta ID de la cuenta que quieres añadir al cliente:"));
 
         if (dao.addAccountToCustomer(cus, acc)) {
             System.out.println("Se ha añadido la cuenta al cliente correctamente");

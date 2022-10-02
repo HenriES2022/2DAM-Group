@@ -124,20 +124,22 @@ public class DAOImplementacionFich implements DAO {
         boolean created = false;
         customerSet = dumpFileToSet();
         Long id = 0L;
-        
+
         try {
             Customer customer = checkCustomerData(cus);
             customerSet.remove(customer);
 
             if (!customerSet.isEmpty()) {
-                for (Account customerAccount : customer.getCustomerAccounts()) {
-                    if (id < customerAccount.getId()) {
-                        id = customerAccount.getId();
+                for (Customer customerForEach : customerSet) {
+                    for (Account customerAccount : customerForEach.getCustomerAccounts()) {
+                        if (id < customerAccount.getId()) {
+                            id = customerAccount.getId();
+                        }
                     }
                 }
             }
-            
-            ac.setId(id+1);
+
+            ac.setId(++id);
 
             customer.getCustomerAccounts().add(ac);
 
@@ -155,33 +157,34 @@ public class DAOImplementacionFich implements DAO {
 
     @Override
     public Boolean addAccountToCustomer(Customer cus, Account ac) {
-        customerSet = dumpFileToSet();
         Boolean modified = false;
         Customer customer = null;
-        
+
         try {
             customer = checkCustomerData(cus);
             customerSet.remove(cus);
-            
-            for (Account customerAccount : customer.getCustomerAccounts()) {
-                if (customerAccount.getId().equals(ac.getId())) {
-                    ac = customerAccount;
+
+            for (Customer cusSet : customerSet) {
+                for (Account customerAccount : cusSet.getCustomerAccounts()) {
+                    if (customerAccount.getId().equals(ac.getId())) {
+                        ac = customerAccount;
+                    }
                 }
             }
-            
+
             customer.getCustomerAccounts().add(ac);
             customerSet.add(cus);
-            
+
             modified = true;
         } catch (DataNotFoundException ex) {
             Logger.getLogger(DAOImplementacionFich.class.getName()).log(Level.SEVERE, null, ex);
             modified = false;
         }
-        
+
         if (modified) {
             volcarSetFichero(customerSet);
         }
-       return modified;
+        return modified;
     }
 
     @Override
