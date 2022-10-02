@@ -151,9 +151,9 @@ public class Controller {
                 do {
                     nombre = Util.introducirCadena("Introduzca el nombre del cliente: ");
                     apellido = Util.introducirCadena("Introduzca el apellido del cliente: ");
-                    if ((!nombre.isEmpty() && !apellido.isEmpty()) && (!nombre.contains(" ") && !apellido.contains(" "))) {
-                        cus.setFirstName(nombre);
-                        cus.setLastName(apellido);
+                    if ((!nombre.isEmpty() && !apellido.isEmpty())) {
+                        cus.setFirstName(nombre.trim());
+                        cus.setLastName(apellido.trim());
                         ok = true;
                     } else {
                         System.out.println("Debe de introducir un nombre y apellido válido");
