@@ -34,7 +34,12 @@ public class DAOImplementacionFich implements DAO {
     private final File fich = new File("BankFich.obj");
     private static Set<Customer> customerSet = null;
 
-    public boolean volcarSetFichero(Set<Customer> customers) {
+    /**
+     * Este metodo obtiene los datos de una coleccion set y los vuelca a al fichero
+     * @param customers La coleccion de clientes que se quiere volcar
+     * @return Devuelve un true si se ha hecho el volcado correctamente , false si ha habido algun error
+     */
+    private boolean volcarSetFichero(Set<Customer> customers) {
         FileOutputStream fos = null;
         ObjectOutputStream oos = null;
 
@@ -272,6 +277,10 @@ public class DAOImplementacionFich implements DAO {
         return null;
     }
 
+    /**
+     * Este metodo vuelca el fichero a una coleccion tipo Set
+     * @return Devielve un set con los datos del fichero
+     */
     private Set<Customer> dumpFileToSet() {
 
         if (customerSet != null) {
@@ -318,6 +327,11 @@ public class DAOImplementacionFich implements DAO {
         return customerSet;
     }
 
+    /**
+     * Este metodo actualiza el balance cuando se crea un movimiento en esa cuenta
+     * @param customerAccount La cuenta que se va a actualizar
+     * @param mov El movimiento con la informacion de tipo de movimiento y cantidad
+     */
     private void updateBalance(Account customerAccount, Movement mov) {
         if (mov.getDescription().equalsIgnoreCase("Deposit")) {
             customerAccount.setBalance(customerAccount.getBalance() + mov.getAmount());
@@ -326,6 +340,11 @@ public class DAOImplementacionFich implements DAO {
         }
     }
 
+    /**
+     * Un metodo que carga una lista con todos los movimientos de todas las cuentas
+     * @param customers La lista de clientes de las que se obtendran las cuentas
+     * @return Devuelve una lista con los movimientos de todas las cuentas
+     */
     private List<Movement> chargeAllMovements(Set<Customer> customers) {
         List<Movement> ret = new ArrayList<>();
 
