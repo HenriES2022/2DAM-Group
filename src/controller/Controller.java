@@ -26,9 +26,7 @@ public class Controller {
     private final DAO dao = DAOFactory.getDAO();
 
     /**
-     * Método para crear un cliente
-     *
-     * @return
+     * Este método pide los datos de un cliente para crearlo
      */
     public void createCustomer() {
         // Pedir todos los datos del cliente
@@ -48,7 +46,9 @@ public class Controller {
     }
 
     /**
-     * Mostrar los datos de un cliente
+     * Este método primero llama a {@link getCustomer()} para buscar el cliente
+     * que se quiere mostrar sus datos y se le pregunta si también si quiere
+     * mostrar sus cuentas
      *
      */
     public void checkCustomer() {
@@ -72,7 +72,8 @@ public class Controller {
     }
 
     /**
-     * Método para buscar un cliente
+     * Método que se comunica con el DAO para recoger los datos del cliente que
+     * se quiere buscar
      *
      * @return Customer
      */
@@ -98,7 +99,7 @@ public class Controller {
     }
 
     /**
-     * Mostrar las cuentas de los clientes
+     * Método que mostrará la información de las cuentas del cliente buscado
      *
      */
     public void checkCustomerAccounts() {
@@ -208,7 +209,8 @@ public class Controller {
     }
 
     /**
-     *
+     * Este método pide a que cliente se le quiera crear la cuenta, y se le pide
+     * que inserte la información de la cuenta
      */
     public void createAccount() {
         System.out.println("¿A que cliente quieres crear la cuenta?");
@@ -298,7 +300,7 @@ public class Controller {
      * @return Retorna la cuenta que corresponde al id enviado, Retorna nulo en
      * el caso de que no se encuentre la cuenta con ese id
      */
-    public Account searchAccount(Long id, Set<Account> accounts) {
+    private Account searchAccount(Long id, Set<Account> accounts) {
         for (Account account : accounts) {
             if (account.getId().equals(id)) {
                 return account;
@@ -323,6 +325,9 @@ public class Controller {
         }
     }
 
+    /**
+     * Método para añadir una cuenta existente a un cliente
+     */
     public void addAccountToCustomer() {
         System.out.println("¿A que cliente quieres añadir la cuenta?");
         Customer cus = getCustomer();
