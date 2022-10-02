@@ -48,8 +48,7 @@ public class DAOImplementacionBD implements DAO {
 
     // Movement
     private final String SEARCH_MOVEMENTS = "SELECT * FROM MOVEMENT WHERE acount_id = ?";
-    private final String CREATE_MOVEMENT = "INSERT INTO movement VALUES(?,?,?,?,?,?)";
-    private final String SEARCH_MOVEMENT_ID = "SELECT MAX(movement.id) FROM moveent";
+    private final String CREATE_MOVEMENT = "INSERT INTO movement(amount, balance, description, date, account_id) VALUES(?,?,?,?,?)";
 
     // Config
     private final String URL = ResourceBundle.getBundle("controller.config").getString("url");
@@ -90,22 +89,18 @@ public class DAOImplementacionBD implements DAO {
         Boolean created = false;
         this.openConnection();
         PreparedStatement stat = null;
-        Long movementID = searchMovementId();
 
         try {
-            if (movementID > 0) {
-                stat = con.prepareStatement(CREATE_MOVEMENT);
+            stat = con.prepareStatement(CREATE_MOVEMENT);
 
-                stat.setLong(1, movementID + 1);
-                stat.setDouble(2, mov.getAmount());
-                stat.setDouble(3, mov.getBalance());
-                stat.setString(4, mov.getDescription());
-                stat.setTimestamp(5, mov.getDate());
-                stat.setLong(6, mov.getAccount_id());
+            stat.setDouble(1, mov.getAmount());
+            stat.setDouble(2, mov.getBalance());
+            stat.setString(3, mov.getDescription());
+            stat.setTimestamp(4, mov.getDate());
+            stat.setLong(5, mov.getAccount_id());
 
-                if (stat.executeUpdate() > 0) {
-                    created = true;
-                }
+            if (stat.executeUpdate() > 0) {
+                created = true;
             }
 
         } catch (SQLException e) {
@@ -125,7 +120,7 @@ public class DAOImplementacionBD implements DAO {
         ResultSet rs;
 
         // Try catch con recursos
-        try ( PreparedStatement stat = con.prepareStatement(SEARCH_MOVEMENTS)) {
+        try (PreparedStatement stat = con.prepareStatement(SEARCH_MOVEMENTS)) {
 
             stat.setLong(1, mov.getAccount_id());
 
@@ -159,7 +154,7 @@ public class DAOImplementacionBD implements DAO {
     @Override
     public Boolean createAccount(Account ac, Customer cus) {
         this.openConnection();
-        try ( PreparedStatement stat = con.prepareStatement(CREATE_ACCOUNT)) {
+        try (PreparedStatement stat = con.prepareStatement(CREATE_ACCOUNT)) {
             stat.setString(1, ac.getDescription());
             stat.setDouble(2, ac.getBalance());
             stat.setDouble(3, ac.getCreditLine());
@@ -210,7 +205,7 @@ public class DAOImplementacionBD implements DAO {
         this.openConnection();
         ResultSet rs;
         Account account = null;
-        try ( PreparedStatement stat = con.prepareStatement(SEARCH_ACCOUNT_DATA)) {
+        try (PreparedStatement stat = con.prepareStatement(SEARCH_ACCOUNT_DATA)) {
             con.setAutoCommit(false);
 
             stat.setLong(1, ac.getId());
@@ -250,7 +245,7 @@ public class DAOImplementacionBD implements DAO {
         this.openConnection();
 
         // Try catch con recursos
-        try ( PreparedStatement stat = con.prepareStatement(CREATE_CUSTOMER)) {
+        try (PreparedStatement stat = con.prepareStatement(CREATE_CUSTOMER)) {
 
             stat.setString(1, cus.getFirstName());
             stat.setString(2, cus.getLastName());
@@ -281,7 +276,7 @@ public class DAOImplementacionBD implements DAO {
         ResultSet rs;
 
         // Try catch con recursos
-        try ( PreparedStatement stat = (cus.getId() >= 0L
+        try (PreparedStatement stat = (cus.getId() >= 0L
                 ? con.prepareStatement(SEARCH_CUSTOMER_ID)
                 : con.prepareStatement(SEARCH_CUSTOMER_NAME))) {
 
@@ -327,7 +322,7 @@ public class DAOImplementacionBD implements DAO {
         ResultSet rs;
 
         // Try catch con recursos
-        try ( PreparedStatement stat = con.prepareStatement(SEARCH_ACCOUNT_CUSTOMER)) {
+        try (PreparedStatement stat = con.prepareStatement(SEARCH_ACCOUNT_CUSTOMER)) {
 
             stat.setLong(1, cus.getId());
 
@@ -355,37 +350,6 @@ public class DAOImplementacionBD implements DAO {
         }
         return accounts;
 
-    }
-
-    /**
-     * This method search for the lastest movement id
-     *
-     * @return Returns the id of the last movement, if there has been any type
-     * of exception it will return -1
-     */
-    private Long searchMovementId() {
-        Long id = null;
-
-        this.openConnection();
-        ResultSet rs;
-
-        // Try catch con recursos
-        try ( PreparedStatement stat = con.prepareStatement(SEARCH_MOVEMENTS)) {
-            rs = stat.executeQuery();
-
-            if (rs.next()) {
-                id = rs.getLong(1);
-            }
-
-        } catch (SQLException e) {
-            System.err.println(e);
-            id = (long) -1;
-        } finally {
-            this.closeConnection();
-
-        }
-
-        return id;
     }
 
 }
