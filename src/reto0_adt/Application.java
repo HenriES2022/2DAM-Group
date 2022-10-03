@@ -4,6 +4,9 @@
  */
 package reto0_adt;
 
+import controller.Controller;
+import view.ViewClass;
+
 /**
  *
  * @author yeguo
@@ -14,7 +17,7 @@ public class Application {
      * @param args the command line arguments
      */
     public static void main(String[] args) {
-        // TODO code application logic here
+        ViewClass.run(new Controller());
     }
-    
+
 }
